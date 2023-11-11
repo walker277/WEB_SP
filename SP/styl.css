@@ -1,0 +1,8 @@
+#div_bg{
+    background-image: url("/images/ocean7.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    height: 50vh;
+}

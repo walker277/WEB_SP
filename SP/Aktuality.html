@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Stránka s aktualitamy ke konferenci">
+    <meta name="author" content="Filip Valtr">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Konference/Registrace</title>
+    <!-- bootstrap -->
+
+    <link rel="stylesheet" href="composer-ukazka/vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="composer-ukazka/vendor/components/font-awesome/css/font-awesome.min.css">
+    <title>Konference_Aktuality</title>
+</head>
+<body>
+<div class="container-fluid text-center text-white bg-dark font-weight-bold" >
+    <h1>Konference: Příroda v následujících letech</h1>
+</div>
+
+
+<div id="navbar" >
+    <!-- Grey with black text -->
+    <nav class="navbar navbar-expand-sm bg-light navbar-light sticky-top fa-star">MENU
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="Hlavni_Stranka.html">Domů</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Aktuality.html">Aktuality</a>
+                </li>
+                <!--Dropdown-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                        Přihlášení
+                    </a>
+                    <div class="dropdown-menu">
+                        <!-- fromular v dropdown -->
+                        <form>
+                            <div class="container">
+                                <div class="form-group">
+                                    <label for="username">Uživatelské jméno:
+                                        <span class="input-group">
+                                            <span class="input-group-text fa-user"></span>
+                                            <input type="text" class="form-control" placeholder="zadejte uživatelské jméno" id="username" name="username" required>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Heslo:
+                                        <span class="input-group input-group">
+                                            <span class="fa-lock input-group-text"></span>
+                                            <input type="password" class="form-control" placeholder="zadejte heslo" id="password" name="heslo1" minlength="13" required>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="form-group form-check">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" type="checkbox"> Zapamatovat si mě
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Přihlásit</button>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Registrace.html">Registrace</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<div class="container-fluid">
+    <h2>Aktuality konference</h2>
+
+    <div class="row py-3">
+           <div class="card-group">
+               <!--Dopln hlavu do tela nekam ukaz víc a carousel muzes pridat-->
+               <div class="card">
+                   <div class="card-body bg-success">
+                       <div class="col-12 text-justify">
+                           <sup class="badge badge-danger badge-pill">
+                               <span class="spinner-grow text-light"></span>
+                               Nově
+                           </sup>
+                           Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultrices urna at quam condimentum luctus. Sed sagittis viverra ultrices. Integer quis diam massa. Nunc sodales, est eu varius lobortis, nisi dolor feugiat sapien, non posuere erat tortor quis ipsum. Nam leo nibh, semper vel dui vel, auctor molestie leo. Nulla sapien nulla, pharetra in varius eget, imperdiet sit amet sem. Curabitur sagittis id tortor eu mattis. Pellentesque nec maximus mauris, sed aliquam nisl. Quisque lobortis, lorem sed convallis volutpat, sem urna lobortis urna, nec faucibus dolor libero posuere ante. Quisque at magna augue. Quisque velit nisi, scelerisque at eros eu, vulputate ullamcorper diam. Interdum et malesuada fames ac ante ipsum primis in faucibus. Proin vehicula nulla nec molestie vestibulum. Aenean quis mauris rhoncus, pellentesque diam sed, efficitur massa.
+                       </div>
+                   </div>
+               </div>
+               <div class="card">
+                   <div class="card-body bg-warning">
+                       <div class="col-12 text-justify">
+                           Integer id tortor elementum ante mollis condimentum. In condimentum mi quis dui convallis fermentum. In vestibulum erat vel lacus porttitor aliquet. Morbi at eros massa. Integer eleifend lacinia ex eget feugiat. Ut sem justo, cursus non condimentum nec, blandit sed nisl. Nulla facilisi. Ut viverra arcu ac gravida vulputate. Suspendisse accumsan varius mi, quis efficitur sem ultrices vel. Maecenas non bibendum nunc. Integer nec turpis sit amet dolor pretium tincidunt semper quis nulla. Nam rhoncus mauris vel justo finibus cursus. Nulla tincidunt pellentesque vehicula. Curabitur in purus at nisl lacinia vehicula.
+                       </div>
+                   </div>
+               </div>
+               <div class="card ">
+                   <div class="card-body bg-info">
+                       <div class="col-12 text-justify">
+                           Fusce blandit rhoncus ipsum, ut efficitur orci aliquam eget. Curabitur ante erat, pellentesque sed leo id, hendrerit ullamcorper libero. Donec vulputate eu erat at sollicitudin. Nam et dui lacinia, hendrerit odio at, faucibus massa. Nam eget molestie velit. Suspendisse eu felis elit. Proin at nibh sit amet turpis suscipit fermentum. Nullam sollicitudin sapien sed volutpat tempor. Mauris pellentesque, nibh non iaculis pulvinar, augue purus congue lacus, a feugiat risus enim eget tellus. Duis commodo auctor nunc et iaculis. Pellentesque nisl ante, tincidunt in aliquet sed, convallis in dolor. Nullam ullamcorper orci quis ex ornare porttitor. Cras placerat elit ac est semper, non fringilla dui efficitur. Aliquam erat volutpat. Integer a turpis nulla.
+                       </div>
+                   </div>
+               </div>
+           </div>
+    </div>
+    <div class="row py-3">
+        <div class="col-xl-6 cols-lg-6 col-md-12 col-sm-12 py-md-3 py-sm-3 ">
+            Fusce ac bibendum nulla. Aliquam malesuada odio ut diam aliquam, ut fermentum est faucibus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Quisque ultricies porta nisl quis varius. Nunc condimentum nisl sit amet consectetur vestibulum. Curabitur lectus libero, lacinia et rhoncus nec, hendrerit a mauris. Ut et vehicula mi. Mauris nec leo elementum, auctor enim id, tempor urna. Curabitur ut placerat tortor. Suspendisse mauris arcu, ullamcorper nec viverra eu, rutrum mattis orci. Suspendisse potenti. Integer at aliquam nibh. Donec efficitur luctus odio, vitae varius quam volutpat vel. Suspendisse vitae massa hendrerit, pellentesque dui in, gravida diam. Duis dolor mi, condimentum eget lacinia sit amet, facilisis sed eros.
+        </div>
+        <div class="col-xl-6 cols-lg-6 col-md-12 col-sm-12 py-md-3 py-sm-3 ">
+            Morbi fermentum cursus nisi, non luctus leo mollis at. Mauris sit amet nibh bibendum, gravida nibh sed, ultricies ipsum. Nullam nec sem vel sem bibendum vehicula. Morbi mi lectus, finibus eget justo a, mollis facilisis augue. Vivamus lobortis lacus sit amet ante congue condimentum. Duis tristique ex lobortis tortor hendrerit rhoncus. Phasellus tristique vel quam et ultrices. Integer suscipit finibus odio et laoreet. Cras lectus sapien, porttitor luctus lacus congue, condimentum feugiat dui. Aenean mollis imperdiet orci vel vestibulum. Quisque tempor quis lacus id ornare. Nam vulputate feugiat tincidunt. Proin eu egestas risus, eget sagittis dolor. Integer non hendrerit augue. Pellentesque nec scelerisque libero.
+        </div>
+    </div>
+
+    <div class="row py-3">
+        <div class="col-12">
+            *Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi finibus finibus finibus. Duis at nunc commodo, mollis turpis eu, commodo massa. Aliquam velit mi, laoreet et viverra eget, suscipit sed massa.
+        </div>
+    </div>
+</div>
+
+<footer class="container-fluid bg-dark text-white text-center font-weight-bold">
+    (c) 2023
+    <span class="fa fa-cog fa-spin"></span>
+</footer>
+
+
+<!-- lokalni alternativa -->
+
+<script src="composer-ukazka/vendor/components/jquery/jquery.min.js"></script>
+<script src="composer-ukazka/vendor/alexandermatveev/popper-bundle/AlexanderMatveev/PopperBundle/Resources/public/popper.min.js"></script>
+<script src="composer-ukazka/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Uvodní stránka konference">
+    <meta name="author" content="Filip Valtr">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Konference</title>
+    <link rel="stylesheet" href="styl.css">
+    <!-- bootstrap -->
+
+    <link rel="stylesheet" href="composer-ukazka/vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="composer-ukazka/vendor/components/font-awesome/css/font-awesome.min.css">
+</head>
+<body>
+
+<div class="container-fluid text-center text-white bg-dark font-weight-bold" >
+    <h1>Konference: Příroda v následujících letech</h1>
+</div>
+
+
+<div id="navbar" >
+    <!-- Grey with black text -->
+    <nav class="navbar navbar-expand-sm bg-light navbar-light sticky-top fa-star">MENU
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+             <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="Hlavni_Stranka.html">Domů</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Aktuality.html">Aktuality</a>
+                </li>
+                <!--Dropdown-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                        Přihlášení
+                    </a>
+                    <div class="dropdown-menu">
+                        <!-- fromular v dropdown -->
+                        <form>
+                            <div class="container">
+                                <div class="form-group">
+                                    <label for="username">Uživatelské jméno:
+                                        <span class="input-group">
+                                            <span class="input-group-text fa-user"></span>
+                                            <input type="text" class="form-control" placeholder="zadejte uživatelské jméno" id="username" name="username" required>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Heslo:
+                                        <span class="input-group input-group">
+                                            <span class="fa-lock input-group-text"></span>
+                                            <input type="password" class="form-control" placeholder="zadejte heslo" id="password" name="heslo1" minlength="13" required>
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="form-group form-check">
+                                    <label class="form-check-label">
+                                        <input class="form-check-input" type="checkbox"> Zapamatovat si mě
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Přihlásit</button>
+                            </div>
+                        </form>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Registrace.html">Registrace</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+
+<div id="div_bg">
+</div>
+
+<!-- jumbotron !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
+
+<footer class="container-fluid bg-dark text-white text-center font-weight-bold">
+    (c) 2023
+    <span class="fa fa-cog fa-spin"></span>
+</footer>
+
+
+<!-- lokalni alternativa -->
+
+<script src="composer-ukazka/vendor/components/jquery/jquery.min.js"></script>
+<script src="composer-ukazka/vendor/alexandermatveev/popper-bundle/AlexanderMatveev/PopperBundle/Resources/public/popper.min.js"></script>
+<script src="composer-ukazka/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+
+</body>
+
+
+
+</html>
