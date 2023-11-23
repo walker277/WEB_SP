@@ -6,6 +6,7 @@
     <meta name="author" content="Filip Valtr">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Konference/Registrace</title>
+    <link rel="stylesheet" href="styl.css">
     <!-- bootstrap -->
 
     <link rel="stylesheet" href="composer-ukazka/vendor/twbs/bootstrap/dist/css/bootstrap.min.css">
@@ -76,7 +77,7 @@
     </nav>
 </div>
 
-<div class="container-fluid">
+<div class="container-fluid " id="lingrad">
     <h2>Aktuality konference</h2>
 
     <div class="row py-3">
@@ -221,12 +222,57 @@
 
 <footer class="container-fluid bg-dark text-white text-center font-weight-bold">
     <div class="container-fluid text-justify">
-        <h5 class="row">Podpora</h5>
-        <div class="row">
-            <span class="fa-envelope">e-mail: ipsum@support.cz</span>
-        </div>
-        <div class="row">
-            <span class="fa-phone">telefon: 00 000 000 000</span>
+        <form action="http://students.kiv.zcu.cz/~nyklm/+studenti-kiv-web/formular-zobrazeni.php" method="POST"
+              target="_blank" accept-charset="UTF-8" autocomplete="off" enctype="multipart/form-data">
+            <div class="row py-3">
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div>
+                        <h5>Máte dotaz? Napište nám:</h5>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailD">Váš email:
+                            <span class="input-group">
+                                <span class="input-group-text fa-envelope"></span>
+                                <input type="email" class="form-control" placeholder="zadejte email" id="emailD" name="email" required >
+                            </span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label for="JmenoD">Vaše jméno:
+                            <span class="input-group">
+                                <span class="input-group-text fa-user"></span>
+                                <input type="text" class="form-control" placeholder="zadejte jméno" id="JmenoD" name="jmeno" required >
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                    <div>
+                        <label for="textareaD">Dotaz:</label>
+                        <span class="input-group">
+                                    <span class="input-group-text fa-pencil"></span>
+                                    <textarea class="form-control" id="textareaD" rows="4" placeholder="zadejte dotaz" id="textareaD" name="dotaz" required></textarea>
+                                </span>
+                    </div>
+                    <div class="btn-group py-2">
+                        <button type="submit" class="btn btn-primary " name="odeslano">Odeslat</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="row py-3">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <div>
+                    <h5>Podpora</h5>
+                </div>
+                <div>
+                    <span class="fa-envelope">e-mail: ipsum@support.cz</span>
+                </div>
+                <div>
+                    <span class="fa-phone">telefon: 00 000 000 000</span>
+                </div>
+            </div>
         </div>
     </div>
     (c) 2023
