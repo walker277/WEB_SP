@@ -9,3 +9,8 @@
 #lingrad{
     background-image: linear-gradient(135deg,rgba(100,255,0,0.50),#23297A);
 }
+#kartaR{
+    display: flex;
+    align-items: center;
+    justify-content: center;"
+}
