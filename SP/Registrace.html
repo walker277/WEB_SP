@@ -39,32 +39,41 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
                         Přihlášení
                     </a>
+
                     <div class="dropdown-menu">
                         <!-- fromular v dropdown -->
                         <form>
                             <div class="container">
-                                <div class="form-group">
-                                    <label for="username">Uživatelské jméno:
-                                        <span class="input-group">
-                                            <span class="input-group-text fa-user"></span>
-                                            <input type="text" class="form-control" placeholder="zadejte uživatelské jméno" id="username" name="username" required>
-                                        </span>
-                                    </label>
+                                <div class="row px-2">
+                                    <div class="form-group">
+                                        <label for="username">Uživatelské jméno:
+                                            <span class="input-group">
+                                                <span class="input-group-text fa-user"></span>
+                                                <input type="text" class="form-control" placeholder="uživatel" id="username" name="username" required>
+                                            </span>
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="password">Heslo:
-                                        <span class="input-group input-group">
-                                            <span class="fa-lock input-group-text"></span>
-                                            <input type="password" class="form-control" placeholder="zadejte heslo" id="password" name="heslo1" minlength="13" required>
-                                        </span>
-                                    </label>
+                                <div class="row px-2">
+                                    <div class="form-group">
+                                        <label for="password">Heslo:
+                                            <span class="input-group input-group">
+                                                <span class="fa-lock input-group-text"></span>
+                                                <input type="password" class="form-control" placeholder="heslo" id="password" name="heslo1" minlength="13" required>
+                                            </span>
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="form-group form-check">
-                                    <label class="form-check-label">
-                                        <input class="form-check-input" type="checkbox"> Zapamatovat si mě
-                                    </label>
+                                <div class="row px-2" >
+                                    <div class="form-group form-check">
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" type="checkbox"> Zapamatovat si mě
+                                        </label>
+                                    </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Přihlásit</button>
+                                <div class="row px-2">
+                                    <button type="submit" class="btn btn-primary">Přihlásit</button>
+                                </div>
                             </div>
                         </form>
                     </div>
