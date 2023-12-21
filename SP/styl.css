@@ -25,3 +25,8 @@
     font-style: italic;
 }
 
+.ohraniceniKarty{
+    border-width: 3px;
+    border-style: solid;
+    border-color: dodgerblue;
+}
