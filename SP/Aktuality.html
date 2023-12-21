@@ -94,7 +94,7 @@
 </div>
 
 <div class="container-fluid lingrad">
-    <h2 class="py-3">Aktuality konference</h2>
+    <h2 class="py-3 font-weight-bold text-primary">Aktuality konference</h2>
 
     <div class="row py-3">
            <div class="card-group">
@@ -103,7 +103,7 @@
                    <div class="card border-dark">
                        <div class="card-header">
                            <div class="row container">
-                               <h4>
+                               <h4 class="font-weight-bold font-italic">
                                    Integer quis
                                    <sup class="badge badge-danger badge-pill">
                                        <span class="spinner-grow text-light"></span>
@@ -114,7 +114,7 @@
                            <div class="text-right">11.11.2023</div>
                        </div>
                        <div class="card-body bg-success">
-                           <div class="col-12 text-justify">
+                           <div class="col-12 text-justify text-dark">
                                <p>
                                     Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ultrices urna at quam condimentum luctus. Sed sagittis viverra ultrices. Integer quis diam massa. Nunc sodales, est eu varius lobortis, nisi dolor feugiat sapien, non posuere erat tortor quis ipsum. Nam leo nibh, semper vel dui vel, auctor molestie leo. Nulla sapien nulla, pharetra in varius eget, imperdiet sit amet sem. Curabitur sagittis id tortor eu mattis. Pellentesque nec maximus mauris, sed aliquam nisl. Quisque lobortis, lorem sed convallis volutpat, sem urna lobortis urna, nec faucibus dolor libero posuere ante. Quisque at magna augue. Quisque velit nisi, scelerisque at eros eu, vulputate ullamcorper diam. Interdum et malesuada fames ac ante ipsum primis in faucibus. Proin vehicula nulla nec molestie vestibulum. Aenean quis mauris rhoncus, pellentesque diam sed, efficitur massa.
                                </p>
@@ -178,7 +178,7 @@
     </div>
     <div class="row py-3">
         <div class="col-xl-6 cols-lg-6 col-md-12 col-sm-12">
-            <p>
+            <p class="odstavecPrvniPismeno">
                 Fusce ac bibendum nulla. Aliquam malesuada odio ut diam aliquam, ut fermentum est faucibus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Quisque ultricies porta nisl quis varius. Nunc condimentum nisl sit amet consectetur vestibulum. Curabitur lectus libero, lacinia et rhoncus nec, hendrerit a mauris. Ut et vehicula mi. Mauris nec leo elementum, auctor enim id, tempor urna. Curabitur ut placerat tortor. Suspendisse mauris arcu, ullamcorper nec viverra eu, rutrum mattis orci. Suspendisse potenti. Integer at aliquam nibh. Donec efficitur luctus odio, vitae varius quam volutpat vel. Suspendisse vitae massa hendrerit, pellentesque dui in, gravida diam. Duis dolor mi, condimentum eget lacinia sit amet, facilisis sed eros.
             </p>
         </div>
@@ -224,23 +224,30 @@
 
 
     <div class="row py-3">
-        <div class="col-12">
+        <div class="col-12 text-light font-italic text-center">
             *Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi finibus finibus finibus. Duis at nunc commodo, mollis turpis eu, commodo massa. Aliquam velit mi, laoreet et viverra eget, suscipit sed massa.
         </div>
     </div>
 </div>
 
-<footer class="container-fluid bg-dark text-white text-center font-weight-bold">
+<footer class="container-fluid bg-dark text-white text-center font-weight-bold py-3">
     <div class="container-fluid text-justify">
         <form action="http://students.kiv.zcu.cz/~nyklm/+studenti-kiv-web/formular-zobrazeni.php" method="POST"
               target="_blank" accept-charset="UTF-8" autocomplete="off" enctype="multipart/form-data">
-            <div class="row py-3">
+            <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                     <div>
-                        <h5>Máte dotaz? Napište nám:</h5>
+                        <h4 class="font-weight-bold" id="nadpis2">Máte dotaz? Napište nám:</h4>
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <hr class="border border-secondary">
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                     <div class="form-group">
-                        <label for="emailD">Váš email:
+                        <label class="font-italic" for="emailD">Váš email:
                             <span class="input-group">
                                 <span class="input-group-text fa-envelope"></span>
                                 <input type="email" class="form-control" placeholder="zadejte email" id="emailD" name="email" required >
@@ -248,7 +255,7 @@
                         </label>
                     </div>
                     <div class="form-group">
-                        <label for="JmenoD">Vaše jméno:
+                        <label class="font-italic" for="JmenoD">Vaše jméno:
                             <span class="input-group">
                                 <span class="input-group-text fa-user"></span>
                                 <input type="text" class="form-control" placeholder="zadejte jméno" id="JmenoD" name="jmeno" required >
@@ -259,10 +266,10 @@
 
                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                     <div>
-                        <label for="textareaD">Dotaz:</label>
+                        <label class="font-italic" for="textareaD">Dotaz:</label>
                         <span class="input-group">
                                     <span class="input-group-text fa-pencil"></span>
-                                    <textarea class="form-control" id="textareaD" rows="4" placeholder="zadejte dotaz" id="textareaD" name="dotaz" required></textarea>
+                                    <textarea class="form-control" rows="4" placeholder="zadejte dotaz" id="textareaD" name="dotaz" required></textarea>
                                 </span>
                     </div>
                     <div class="btn-group py-2">
@@ -271,22 +278,32 @@
                 </div>
             </div>
         </form>
-        <div class="row py-3">
+        <div class="row mt-3">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <h4 class="font-weight-bold" id="nadpis3">Podpora</h4>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <hr class="border border-secondary">
+            </div>
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                 <div>
-                    <h5>Podpora</h5>
+                    <span class="fa-envelope"><i>e-mail:</i> ipsum@support.cz</span>
                 </div>
                 <div>
-                    <span class="fa-envelope">e-mail: ipsum@support.cz</span>
-                </div>
-                <div>
-                    <span class="fa-phone">telefon: 00 000 000 000</span>
+                    <span class="fa-phone"><i>telefon:</i> 00 000 000 000</span>
                 </div>
             </div>
         </div>
     </div>
-    (c) 2023
-    <span class="fa fa-cog fa-spin"></span>
+    <div class="row mt-3">
+        <div class="col-12">
+            (c) 2023
+            <span class="fa fa-cog fa-spin"></span>
+        </div>
+    </div>
 </footer>
 
 

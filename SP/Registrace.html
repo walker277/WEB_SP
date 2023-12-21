@@ -98,7 +98,7 @@
 <div class="container py-5" id="kartaR" >
     <div class="card border-dark" id="kartaPozadi">
         <div class="card-header text-center">
-            <h3>Registrace</h3>
+            <h3 class="text-primary">Registrace</h3>
         </div>
         <div class="card-body  text-justify " >
             <form action="http://students.kiv.zcu.cz/~nyklm/+studenti-kiv-web/formular-zobrazeni.php" method="POST"
@@ -190,23 +190,30 @@
     </div>
 </div>
 
-<div class="container py-5" >
+<div class="container py-5 text-light font-italic" >
     *Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam sagittis consectetur risus, sed ullamcorper turpis imperdiet sed. Vestibulum nisi neque, feugiat vel arcu nec, convallis porttitor dui. Integer nec pharetra diam.
 </div>
 
 </div>
 
-<footer class="container-fluid bg-dark text-white text-center font-weight-bold">
+<footer class="container-fluid bg-dark text-white text-center font-weight-bold py-3">
     <div class="container-fluid text-justify">
         <form action="http://students.kiv.zcu.cz/~nyklm/+studenti-kiv-web/formular-zobrazeni.php" method="POST"
               target="_blank" accept-charset="UTF-8" autocomplete="off" enctype="multipart/form-data">
-            <div class="row py-3">
+            <div class="row">
                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                     <div>
-                        <h5>Máte dotaz? Napište nám:</h5>
+                        <h4 class="font-weight-bold" id="nadpis2">Máte dotaz? Napište nám:</h4>
                     </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <hr class="border border-secondary">
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                     <div class="form-group">
-                        <label for="emailD">Váš email:
+                        <label class="font-italic" for="emailD">Váš email:
                             <span class="input-group">
                                 <span class="input-group-text fa-envelope"></span>
                                 <input type="email" class="form-control" placeholder="zadejte email" id="emailD" name="email" required >
@@ -214,7 +221,7 @@
                         </label>
                     </div>
                     <div class="form-group">
-                        <label for="JmenoD">Vaše jméno:
+                        <label class="font-italic" for="JmenoD">Vaše jméno:
                             <span class="input-group">
                                 <span class="input-group-text fa-user"></span>
                                 <input type="text" class="form-control" placeholder="zadejte jméno" id="JmenoD" name="jmeno" required >
@@ -225,10 +232,10 @@
 
                 <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                     <div>
-                        <label for="textareaD">Dotaz:</label>
+                        <label class="font-italic" for="textareaD">Dotaz:</label>
                         <span class="input-group">
                                     <span class="input-group-text fa-pencil"></span>
-                                    <textarea class="form-control"  rows="4" placeholder="zadejte dotaz" id="textareaD" name="dotaz" required></textarea>
+                                    <textarea class="form-control" rows="4" placeholder="zadejte dotaz" id="textareaD" name="dotaz" required></textarea>
                                 </span>
                     </div>
                     <div class="btn-group py-2">
@@ -237,24 +244,33 @@
                 </div>
             </div>
         </form>
-        <div class="row py-3">
+        <div class="row mt-3">
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                <h4 class="font-weight-bold" id="nadpis3">Podpora</h4>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <hr class="border border-secondary">
+            </div>
             <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                 <div>
-                    <h5>Podpora</h5>
+                    <span class="fa-envelope"><i>e-mail:</i> ipsum@support.cz</span>
                 </div>
                 <div>
-                    <span class="fa-envelope">e-mail: ipsum@support.cz</span>
-                </div>
-                <div>
-                    <span class="fa-phone">telefon: 00 000 000 000</span>
+                    <span class="fa-phone"><i>telefon:</i> 00 000 000 000</span>
                 </div>
             </div>
         </div>
     </div>
-    (c) 2023
-    <span class="fa fa-cog fa-spin"></span>
+    <div class="row mt-3">
+        <div class="col-12">
+            (c) 2023
+            <span class="fa fa-cog fa-spin"></span>
+        </div>
+    </div>
 </footer>
-
 
 <script>
     function validate_pw2(pw2) {
