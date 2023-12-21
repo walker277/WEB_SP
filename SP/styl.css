@@ -9,7 +9,7 @@
 #lingrad{
     background-image: linear-gradient(135deg,rgba(100,255,0,0.50),#23297A);
 }
-#nadpis{
+#nadpis, #nadpis2, #nadpis3{
     margin: 0;
     padding: 0;
 }
