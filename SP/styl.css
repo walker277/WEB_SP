@@ -4,7 +4,7 @@
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center;
-    height: 40vh;
+    height: 35vh;
 }
 .lingrad{
     background-image: linear-gradient(135deg,rgba(100,255,0,0.50),#23297A);
