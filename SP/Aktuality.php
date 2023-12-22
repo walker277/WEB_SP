@@ -1,3 +1,32 @@
+<?php
+    require_once("Login.class.php");
+    $login = new Login;
+
+    // zpracovani odeslanych formularu - mam akci?
+    if(isset($_POST["action"])){
+        // mam pozadavek na login ?
+        if($_POST["action"] == "login") {
+            // mam co ulozit?
+            if (isset($_POST["username"]) && $_POST["username"] != "") {
+                // prihlasim uzivatele
+                $login->login($_POST["username"]);
+            } else {
+                echo "<script>alert('Nebylo zadáno uživatelské jméno.');</script>";
+            }
+        }// mam pozadavek na logout?
+        else if(isset($_POST['action'])){
+            if($_POST["action"] == "logout"){
+                // odhlasim uzivatele
+                $login->logout();
+            }
+        }
+        // neznamy pozadavek
+        else {
+            echo "<script>alert('Chyba: Nebyla rozpoznána požadovaná akce.');</script>";
+        }
+    }
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +47,11 @@
     <h1 id="nadpis">Konference: Příroda v následujících letech</h1>
 </div>
 
+<?php
 
+///////////// PRO NEPRIHLASENE UZIVATELE ///////////////
+if(!$login->isUserLogged()){
+?>
 <div id="navbar" class="sticky-top" >
     <!-- Grey with black text -->
     <nav class="navbar navbar-expand-sm bg-light navbar-light fa-star">MENU
@@ -29,10 +62,10 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="Hlavni_Stranka.html">Domů</a>
+                    <a class="nav-link" href="Hlavni_Stranka.php">Domů</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="Aktuality.html">Aktuality</a>
+                    <a class="nav-link" href="Aktuality.php">Aktuality</a>
                 </li>
                 <!--Dropdown-->
                 <li class="nav-item dropdown">
@@ -41,7 +74,7 @@
                     </a>
                     <div class="dropdown-menu border-primary">
                         <!-- fromular v dropdown -->
-                        <form>
+                        <form method="post">
                             <div class="container">
                                 <div class="row">
                                     <div class="col-12">
@@ -78,7 +111,7 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
-                                        <button type="submit" class="btn btn-primary">Přihlásit</button>
+                                        <button type="submit" name="action" value="login" class="btn btn-primary">Přihlásit</button>
                                     </div>
                                 </div>
                             </div>
@@ -92,6 +125,39 @@
         </div>
     </nav>
 </div>
+<?php
+///////////// KONEC: PRO NEPRIHLASENE UZIVATELE ///////////////
+} else {
+///////////// PRO PRIHLASENE UZIVATELE ///////////////
+?>
+<div id="navbar" class="sticky-top" >
+    <!-- Grey with black text -->
+    <nav class="navbar navbar-expand-sm bg-light navbar-light fa-star">MENU
+        <!-- Toggler/collapsibe Button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="Hlavni_Stranka.php">Domů</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Aktuality.php">Aktuality</a>
+                </li>
+                <li class="nav-item">
+                    <form method="post">
+                        <button class="btn-outline-danger text-dark font-weight-bold border-dark" name="action" value="logout">Odhlásit se</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<?php
+}
+///////////// KONEC: PRO PRIHLASENE UZIVATELE ///////////////
+?>
 
 <div class="container-fluid lingrad">
     <h2 class="py-3 font-weight-bold text-primary">Aktuality konference</h2>
@@ -202,13 +268,13 @@
             <!-- The slideshow -->
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="/images/forest.jpg" alt="Los Angeles">
+                    <img src="images/forest.jpg">
                 </div>
                 <div class="carousel-item">
-                    <img src="/images/mountain2.jpg" alt="n">
+                    <img src="images/mountain2.jpg">
                 </div>
                 <div class="carousel-item">
-                    <img src="/images/udoli2.jpg" alt="k">
+                    <img src="images/udoli2.jpg">
                 </div>
             </div>
 

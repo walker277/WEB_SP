@@ -12,14 +12,16 @@
   </component>
   <component name="PhpIncludePathManager">
     <include_path>
+      <path value="$PROJECT_DIR$/composer-ukazka/vendor/composer" />
+      <path value="$PROJECT_DIR$/composer-ukazka/vendor/components/font-awesome" />
+      <path value="$PROJECT_DIR$/composer-ukazka/vendor/components/jquery" />
       <path value="$PROJECT_DIR$/composer-ukazka/vendor/alexandermatveev/popper-bundle" />
       <path value="$PROJECT_DIR$/composer-ukazka/vendor/twbs/bootstrap" />
-      <path value="$PROJECT_DIR$/composer-ukazka/vendor/components/font-awesome" />
-      <path value="$PROJECT_DIR$/composer-ukazka/vendor/composer" />
-      <path value="$PROJECT_DIR$/composer-ukazka/vendor/components/jquery" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="8.2" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.2">
+    <option name="suggestChangeDefaultLanguageLevel" value="false" />
+  </component>
   <component name="PhpStanOptionsConfiguration">
     <option name="transferred" value="true" />
   </component>

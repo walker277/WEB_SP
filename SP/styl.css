@@ -1,5 +1,5 @@
 #div_bg{
-    background-image: url("/images/ocean7.jpg");
+    background-image: url('images/ocean7.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
