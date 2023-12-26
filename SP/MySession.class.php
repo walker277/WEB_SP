@@ -59,6 +59,14 @@ class MySession {
     public function removeAllSessions(){
         session_unset();
     }
+    /**
+     *  Funkce pro ulozeni hodnoty do session.
+     *  @param string $name     Jmeno atributu.
+     *  @param mixed $value    Hodnota
+     */
+    public function addSession($name, $value){
+        $_SESSION[$name] = $value;
+    }
 
 }
 ?>

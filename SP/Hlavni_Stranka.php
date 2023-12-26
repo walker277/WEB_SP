@@ -1,8 +1,11 @@
 <?php
+require_once("MyDatabase.class.php");
+$db = new MyDatabase();
+$rights = $db->getAllRights();
 // nacteni souboru s funkcemi loginu (pracuje se session)
 require_once("Login.class.php");
-$login = new Login;
 
+$login = new Login;
 // zpracovani odeslanych formularu - mam akci?
 if(isset($_POST["action"])){
     // mam pozadavek na login ?
@@ -119,7 +122,7 @@ if(!$login->isUserLogged()){
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="Registrace.html">Registrace</a>
+                        <a class="nav-link" href="Registrace.php">Registrace</a>
                     </li>
                 </ul>
             </div>
@@ -185,6 +188,9 @@ if(!$login->isUserLogged()){
                         <a class="nav-link" href="Aktuality.php">Aktuality</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="Registrace.php">Osobní údaje</a>
+                    </li>
+                    <li class="nav-item">
                         <form method="post">
                             <button class="btn-outline-danger text-dark font-weight-bold border-dark" name="action" value="logout">Odhlásit se</button>
                         </form>
@@ -193,12 +199,52 @@ if(!$login->isUserLogged()){
             </div>
         </nav>
     </div>
-
     <div class="lingrad">
     <div class="container-fluid">
         <h2 class="py-3 font-weight-bold text-primary"> Domovská stránka</h2>
+
+        <?php
+            if(isset($_POST['id_uzivatel'])){
+                $res = $db->deleteFromTable(TABLE_UZIVATEL, "id_uzivatel='$_POST[id_uzivatel]'");
+            }
+            if($res){
+                echo "<script>alert('Ok: Uživatel byl smazán z databáze');</script>";
+
+            }else{
+                echo "<script>alert('ERRO: Smazaní uživatle se nezdařilo');</script>";
+            }
+            $users = $db->getAllUsers();
+        ?>
+
+            <h3>Seznam uživatelů</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered table-primary">
+                    <tr><th>ID</th><th>Uživatelské Jméno</th><th>Jméno</th><th>E-mail</th><th>Právo</th><th>Smazat</th><th>Změnit právo</th></tr>
+                    <?php
+                    // projdu uzivatele a vypisu je
+                    foreach ($users as $u) {
+                        echo "<tr><td>$u[id_uzivatel]</td><td>$u[username]</td><td>$u[jmeno_prijmeni]</td><td>$u[email]</td><td>$u[id_pravo]</td><td>"
+                            ."<form action='' method='POST'>
+                                  <input type='hidden' name='id_uzivatel' value='$u[id_uzivatel]'>
+                                  <input type='submit' name='potvrzeni' value='Smazat'>
+                              </form>"
+                            ."</td>";
+                        echo "<td>";
+                            echo "<select name='pravo'>";
+                                    foreach ($rights as $r){
+                                        echo "<option value='$r[id_pravo]'>$r[nazev]</option>";
+                                    }
+                                echo "<input type='hidden' name='id_pravo' value='$r[id_pravo]'>";
+                                echo "<input type='submit' name='potvrzeni' value='Zmenit'>";
+                            echo"</select>";
+                        echo "</td></tr>";
+                    }
+                    ?>
+                </table>
+            </div>
     </div>
     </div>
+
     <?php
 }
 ///////////// KONEC: PRO PRIHLASENE UZIVATELE ///////////////

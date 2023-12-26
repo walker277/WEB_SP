@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4b33fefed9978875ddc521929f44febc",
+    "content-hash": "468940ed4ebc907a206b60b156e023a4",
     "packages": [
         {
             "name": "alexandermatveev/popper-bundle",
@@ -208,7 +208,9 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "ext-pdo": "*"
+    },
     "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }

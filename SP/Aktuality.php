@@ -119,7 +119,7 @@ if(!$login->isUserLogged()){
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="Registrace.html">Registrace</a>
+                    <a class="nav-link" href="Registrace.php">Registrace</a>
                 </li>
             </ul>
         </div>
@@ -144,6 +144,9 @@ if(!$login->isUserLogged()){
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="Aktuality.php">Aktuality</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="Registrace.php">Osobní údaje</a>
                 </li>
                 <li class="nav-item">
                     <form method="post">
