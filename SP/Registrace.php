@@ -1,21 +1,20 @@
 <?php
 require_once("MyDatabase.class.php");
 $db = new MyDatabase();
-$UzivID = 3;
-$user = $db->getUserByID($UzivID);
 
-// nacteni souboru s funkcemi loginu (pracuje se session)
-require_once("Login.class.php");
-
-$login = new Login;
 // zpracovani odeslanych formularu - mam akci?
 if(isset($_POST["action"])){
     // mam pozadavek na login ?
     if($_POST["action"] == "login") {
         // mam co ulozit?
-        if (isset($_POST["username"]) && $_POST["username"] != "") {
+        if ( (isset($_POST["username"]) && $_POST["username"] != "") && (isset($_POST["heslo1"]) && $_POST["heslo1"] != "") ) {
             // prihlasim uzivatele
-            $login->login($_POST["username"]);
+            $res = $db->userLogin($_POST['username'], $_POST['heslo1']);
+            if($res){
+                echo "<script>alert('OK: Uživatel byl přihlášen');</script>";
+            }else{
+                echo "<script>alert('ERROR: Přihlášení uživatele se nezdařilo');</script>";
+            }
         } else {
             echo "<script>alert('Nebylo zadáno uživatelské jméno.');</script>";
         }
@@ -23,7 +22,8 @@ if(isset($_POST["action"])){
     else if(isset($_POST['action'])){
         if($_POST["action"] == "logout"){
             // odhlasim uzivatele
-            $login->logout();
+            $db->userLogout();
+            echo "<script>alert('OK: Uživatel byl odhlášen');</script>";
         }
     }
     // neznamy pozadavek
@@ -31,6 +31,7 @@ if(isset($_POST["action"])){
         echo "<script>alert('Chyba: Nebyla rozpoznána požadovaná akce.');</script>";
     }
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,7 +56,7 @@ if(isset($_POST["action"])){
 <?php
 
 ///////////// PRO NEPRIHLASENE UZIVATELE ///////////////
-if(!$login->isUserLogged()){
+if(!$db->isUserLogged()){
 ?>
     <div id="navbar" class="sticky-top" >
         <!-- Grey with black text -->
@@ -99,7 +100,7 @@ if(!$login->isUserLogged()){
                                                 <label for="password">Heslo:
                                                     <span class="input-group input-group">
                                                 <span class="fa-lock input-group-text"></span>
-                                                <input type="password" class="form-control" placeholder="heslo" id="password" name="heslo1" minlength="13" required>
+                                                <input type="password" class="form-control" placeholder="heslo" id="password" name="heslo1" minlength="1" required>
                                             </span>
                                                 </label>
                                             </div>
@@ -146,15 +147,19 @@ if(!$login->isUserLogged()){
                     $hash = password_hash($password, PASSWORD_BCRYPT);
                     //pro verifikaci
                     password_verify($password, $hash);
-                    $res = $db->addNewUser($_POST['username'], $hash, $_POST['jmeno'], $_POST['email'], 4, $_POST['pohlavi'], $_POST['narozeni'] );
+                    if($db->jeUsernameVolne($_POST['username'],$db->getAllUsers())){
+                        $res = $db->addNewUser($_POST['username'], $hash, $_POST['jmeno'], $_POST['email'], 4, $_POST['pohlavi'], $_POST['narozeni'] );
+                    }else{
+                        echo "<script>alert('ERROR: Uzivatelske jmeno je zabrane, a proto si zvolte jine');</script>";
+                    }
                     //byl vlozen?
                     if($res){
                         echo "<script>alert('OK: Uživatel byl přidán do databáze');</script>";
                     }else{
-                        "<script>alert('ERROR: Vložení uživatle do databáze se nezdařilo');</script>";
+                        echo "<script>alert('ERROR: Vložení uživatle do databáze se nezdařilo');</script>";
                     }
                 }else{ //nemame vsechny atributy
-                    "<script>alert('ERROR: Nebyly přijaty požadované atributy uživatele');</script>";
+                    echo "<script>alert('ERROR: Nebyly přijaty požadované atributy uživatele');</script>";
                 }
             }
         ?>
@@ -265,7 +270,8 @@ if(!$login->isUserLogged()){
 ///////////// KONEC: PRO NEPRIHLASENE UZIVATELE ///////////////
 } else {
 ///////////// PRO PRIHLASENE UZIVATELE ///////////////
-
+    $user = $db->getLoggedUserData();
+    $UzivID = $user['id_uzivatel'];
     //zpracovani odeslanych formularu
     if(isset($_POST['potvrzeni'])){
         //mam vsechny pozadovane hodnoty?

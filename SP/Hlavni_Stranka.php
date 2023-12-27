@@ -2,18 +2,20 @@
 require_once("MyDatabase.class.php");
 $db = new MyDatabase();
 $rights = $db->getAllRights();
-// nacteni souboru s funkcemi loginu (pracuje se session)
-require_once("Login.class.php");
 
-$login = new Login;
 // zpracovani odeslanych formularu - mam akci?
 if(isset($_POST["action"])){
     // mam pozadavek na login ?
     if($_POST["action"] == "login") {
         // mam co ulozit?
-        if (isset($_POST["username"]) && $_POST["username"] != "") {
+        if ( (isset($_POST["username"]) && $_POST["username"] != "") && (isset($_POST["heslo1"]) && $_POST["heslo1"] != "") ) {
             // prihlasim uzivatele
-            $login->login($_POST["username"]);
+            $res = $db->userLogin($_POST['username'], $_POST['heslo1']);
+            if($res){
+                echo "<script>alert('OK: Uživatel byl přihlášen');</script>";
+            }else{
+                echo "<script>alert('ERROR: Přihlášení uživatele se nezdařilo');</script>";
+            }
         } else {
             echo "<script>alert('Nebylo zadáno uživatelské jméno.');</script>";
         }
@@ -21,7 +23,8 @@ if(isset($_POST["action"])){
     else if(isset($_POST['action'])){
         if($_POST["action"] == "logout"){
             // odhlasim uzivatele
-            $login->logout();
+            $db->userLogout();
+            echo "<script>alert('OK: Uživatel byl odhlášen');</script>";
         }
     }
     // neznamy pozadavek
@@ -53,7 +56,7 @@ if(isset($_POST["action"])){
 <?php
 
 ///////////// PRO NEPRIHLASENE UZIVATELE ///////////////
-if(!$login->isUserLogged()){
+if(!$db->isUserLogged()){
 ?>
     <div id="navbar" class="sticky-top">
         <!-- Grey with black text -->
@@ -97,7 +100,7 @@ if(!$login->isUserLogged()){
                                                 <label for="password">Heslo:
                                                     <span class="input-group input-group">
                                                 <span class="fa-lock input-group-text"></span>
-                                                <input type="password" class="form-control" placeholder="heslo" id="password" name="heslo1" minlength="13" required>
+                                                <input type="password" class="form-control" placeholder="heslo" id="password" name="heslo1" minlength="1" required>
                                             </span>
                                                 </label>
                                             </div>
@@ -232,15 +235,16 @@ if(!$login->isUserLogged()){
                             ."</td>";
                         echo "<td>";
                             echo "<select name='pravo'>";
-                                    foreach ($rights as $r){
-                                        echo "<option value='$r[id_pravo]'>$r[nazev]</option>";
-                                    }
-                                echo "<input type='hidden' name='id_pravo' value='$r[id_pravo]'>";
+                                foreach ($rights as $r){
+                                    $selected = ($r['id_pravo'] == $u['id_pravo']) ? "selected" : "";
+                                    echo "<option value ='$r[id_pravo]' $selected>$r[nazev]</option>";
+                                }
                                 echo "<input type='submit' name='potvrzeni' value='Zmenit'>";
                             echo"</select>";
                         echo "</td></tr>";
                     }
                     ?>
+
                 </table>
             </div>
     </div>

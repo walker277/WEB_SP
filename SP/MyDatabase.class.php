@@ -13,8 +13,8 @@ class MyDatabase {
 
     /** @var MySession $mySession  Vlastni objekt pro spravu session. */
     private $mySession;
-    /** @var string KEY_USER  Klic pro data uzivatele, ktera jsou ulozena v session. */
-    private const KEY_USER = "current_user_id";
+    /** @var string $userSessionKey  Klic pro data uzivatele, ktera jsou ulozena v session. */
+    private $userSessionKey = "current_user_id";
 
     /**
      * MyDatabase constructor.
@@ -330,12 +330,13 @@ class MyDatabase {
      */
     public function userLogin(string $login, string $heslo):bool {
         // ziskam uzivatele z DB - primo overuju login i heslo
-        $where = "login='$login' AND heslo='$heslo'";
+        $where = "username='$login' AND password='$heslo'";
         $user = $this->selectFromTable(TABLE_UZIVATEL, $where);
         // ziskal jsem uzivatele
         if(count($user)){
             // ziskal - ulozim ID prvniho nalezeneho uzivatele do session
-            $this->mySession->addSession(self::KEY_USER, $user[0]['id_uzivatel']);
+            $_SESSION[$this->userSessionKey] = $user[0]['id_uzivatel']; // beru prvniho nalezeneho a ukladam jen jeho ID
+            //$this->mySession->addSession(self::KEY_USER, $user[0]['id_uzivatel']);
             return true;
         }
         // neziskal jsem uzivatele
@@ -346,7 +347,7 @@ class MyDatabase {
      * Odhlasi soucasneho uzivatele.
      */
     public function userLogout(){
-        $this->mySession->removeSession(self::KEY_USER);
+        unset($_SESSION[$this->userSessionKey]);
     }
 
     /**
@@ -355,7 +356,7 @@ class MyDatabase {
      * @return bool     Je prihlasen?
      */
     public function isUserLogged():bool {
-        return $this->mySession->isSessionSet(self::KEY_USER);
+        return isset($_SESSION[$this->userSessionKey]);
     }
 
     /**
@@ -367,7 +368,7 @@ class MyDatabase {
     public function getLoggedUserData(){
         if($this->isUserLogged()){
             // ziskam data uzivatele ze session
-            $userId = $this->mySession->readSession(self::KEY_USER);
+            $userId = $_SESSION[$this->userSessionKey];
             // pokud nemam data uzivatele, tak vypisu chybu a vynutim odhlaseni uzivatele
             if($userId == null) {
                 // nemam data uzivatele ze session - vypisu jen chybu, uzivatele odhlasim a vratim null
@@ -375,24 +376,64 @@ class MyDatabase {
                 $this->userLogout();
                 // vracim null
                 return null;
+            }else{
+                // nactu data uzivatele z databaze
+                $userData = $this->selectFromTable(TABLE_UZIVATEL, "id_uzivatel=$userId");
+                // mam data uzivatele?
+                if(empty($userData)){
+                    // nemam - vypisu jen chybu, uzivatele odhlasim a vratim null
+                    echo "ERROR: Data přihlášeného uživatele se nenachází v databázi (mohl být smazán), a proto byl uživatel odhlášen.";
+                    $this->userLogout();
+                    return null;
+                }else{
+                    // protoze DB vraci pole uzivatelu, tak vyjmu jeho prvni polozku a vratim ziskana data uzivatele
+                    return $userData[0];
+                }
             }
-            // nactu data uzivatele z databaze
-            $userData = $this->selectFromTable(TABLE_UZIVATEL, "id_uzivatel=$userId");
-            // mam data uzivatele?
-            if(empty($userData)){
-                // nemam - vypisu jen chybu, uzivatele odhlasim a vratim null
-                echo "ERROR: Data přihlášeného uživatele se nenachází v databázi (mohl být smazán), a proto byl uživatel odhlášen.";
-                $this->userLogout();
-                return null;
-            }
-            // protoze DB vraci pole uzivatelu, tak vyjmu jeho prvni polozku a vratim ziskana data uzivatele
-            return $userData[0];
+        }else{
+            // uzivatel neni prihlasen - vracim null
+            return null;
         }
-        // uzivatel neni prihlasen - vracim null
-        return null;
+    }
+
+    public function getLoggedUserID(){
+        if($this->isUserLogged()){
+            // ziskam data uzivatele ze session
+            $userId = $_SESSION[$this->userSessionKey];
+            // pokud nemam data uzivatele, tak vypisu chybu a vynutim odhlaseni uzivatele
+            if($userId == null) {
+                // nemam data uzivatele ze session - vypisu jen chybu, uzivatele odhlasim a vratim null
+                echo "SEVER ERROR: Data přihlášeného uživatele nebyla nalezena, a proto byl uživatel odhlášen.";
+                $this->userLogout();
+                // vracim null
+                return null;
+            }else{
+               return $_SESSION[$this->userSessionKey];
+            }
+        }else{
+            // uzivatel neni prihlasen - vracim null
+            return null;
+        }
     }
 
     ///////////////////  KONEC: Sprava prihlaseni uzivatele  ////////////////////////////////////////
 
+    /**
+     * Vrati true pokud je volne false pokud neni
+     * @param $usernameR string obsahujici uzivatelske jmeno
+     * @param $users
+     * @return boolean
+     */
+    public function jeUsernameVolne($usernameR, $users):bool{
+        $volne = true;
+        foreach ($users as $u){
+            if ($u['username'] == $usernameR){
+                $volne = false;
+                break;
+            }
+        }
+        return $volne;
+    }
 }
+
 ?>
