@@ -206,12 +206,13 @@ if(!$login->isUserLogged()){
         <?php
             if(isset($_POST['id_uzivatel'])){
                 $res = $db->deleteFromTable(TABLE_UZIVATEL, "id_uzivatel='$_POST[id_uzivatel]'");
-            }
-            if($res){
-                echo "<script>alert('Ok: Uživatel byl smazán z databáze');</script>";
 
-            }else{
-                echo "<script>alert('ERRO: Smazaní uživatle se nezdařilo');</script>";
+                if($res){
+                    echo "<script>alert('Ok: Uživatel byl smazán z databáze');</script>";
+
+                }else{
+                    echo "<script>alert('ERRO: Smazaní uživatle se nezdařilo');</script>";
+                }
             }
             $users = $db->getAllUsers();
         ?>

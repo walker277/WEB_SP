@@ -203,7 +203,6 @@ if(!$login->isUserLogged()){
                                         <span class="fa-lock input-group-text"></span>
                                         <input type="password" class="form-control" placeholder="zadejte heslo" id="passwordR" name="heslo1" minlength="13" required>
                                     </span>
-
                                 </label>
                             </div>
                         </div>
@@ -221,7 +220,7 @@ if(!$login->isUserLogged()){
                                 <label for="passwordR2">Kontrola (Zopakujte heslo):
                                     <span class="input-group">
                                         <span class="input-group-text fa-lock"></span>
-                                        <input type="password" class="form-control" placeholder="zopakujte zadání hesla" name="heslo2" id="passwordR2" minLength=13 oninput="validate_pw2(this)" required>
+                                        <input type="password" class="form-control" placeholder="zopakujte zadání hesla" name="heslo2" id="passwordR2" minLength=13 oninput="validate_pw2(this,'passwordR')" required>
                                     </span>
                                 </label>
                             </div>
@@ -266,6 +265,46 @@ if(!$login->isUserLogged()){
 ///////////// KONEC: PRO NEPRIHLASENE UZIVATELE ///////////////
 } else {
 ///////////// PRO PRIHLASENE UZIVATELE ///////////////
+
+    //zpracovani odeslanych formularu
+    if(isset($_POST['potvrzeni'])){
+        //mam vsechny pozadovane hodnoty?
+        if( (isset($_POST['email']) && ($_POST['email'] != "")) ){
+            $res = $db->updateUserEmail($UzivID, $_POST['email']);
+            if($res){
+                echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+            }else{
+                echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+            }
+        }elseif ( (isset($_POST['username']) && ($_POST['username'] != "")) ){
+            $res = $db->updateUsername($UzivID, $_POST['username']);
+            if($res){
+                echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+            }else{
+                echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+            }
+        }elseif ( (isset($_POST['jmeno_prijmeni']) && ($_POST['jmeno_prijmeni'] != ""))){
+            $res = $db->updateUserJmeno($UzivID, $_POST['jmeno_prijmeni']);
+            if($res){
+                echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+            }else{
+                echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+            }
+        } elseif( (isset($_POST['heslo1']) && $_POST['heslo1'] != "") && (isset($_POST['heslo2']) && $_POST['heslo2'] != "")
+                   && (isset($_POST['heslo3']) && $_POST['heslo3'] != "") && ($_POST['heslo2'] == $_POST['heslo3']) ){
+            //bylo zadano spravne soucasne heslo
+            if($_POST['heslo1'] == $user['password']){
+                $res = $db->updateUserPass($UzivID, $_POST['heslo2']);
+                if($res){
+                    echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+                }else{
+                    echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+                }
+            }else{
+                echo "<script>alert('ERROR: Bylo zadáno špatné současné heslo uživatele');</script>";
+            }
+        }
+    }
 ?>
     <div id="navbar" class="sticky-top" >
         <!-- Grey with black text -->
@@ -296,11 +335,6 @@ if(!$login->isUserLogged()){
     </div>
 
     <div class="lingrad">
-        <h4>Osobní údaje uživatele</h4>
-
-
-
-        <!--Formular-->
         <div class="container py-5" id="kartaR" >
             <div class="ohraniceniKarty">
                 <div class="card" id="kartaPozadi">
@@ -308,89 +342,137 @@ if(!$login->isUserLogged()){
                         <h3 class="text-primary">Osobní údaje</h3>
                     </div>
                     <div class="card-body text-justify " >
-                            <div class="row" >
-                                <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                    <label for="emailO">Email:
-                                        <span class="input-group">
+                        <div class="row" >
+                            <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                <label for="emailO">Email:
+                                    <span class="input-group">
                                         <span class="input-group-text fa-envelope"></span>
                                         <input type="email" class="form-control"  id="emailO" name="email" value="<?php echo $user['email']; ?>" readonly>
                                     </span>
-                                    </label>
-                                </div>
-                                <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                                    <label for="usernameO">Uživatelské jméno:
-                                        <span class="input-group">
+                                    <button class="btn btn-link font-weight-bold" data-toggle="collapse" data-target="#form">Změnit email</button>
+                                    <div class="collapse" id="form">
+                                        <form action="" method="post">
+                                            <span class="input-group">
+                                                <span class="input-group-text fa-envelope"></span>
+                                                <input type="email" class="form-control" placeholder="zadejte nový email" id="emailZ" name="email" required >
+                                            </span>
+                                            <button type="submit" class="btn btn-primary " name="potvrzeni" value="zmenit">Ulozit zmenu</button>
+                                        </form>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                                <label for="usernameO">Uživatelské jméno:
+                                    <span class="input-group">
                                         <span class="input-group-text fa-user"></span>
                                         <input type="text" class="form-control"  id="usernameO" name="username" value="<?php echo $user['username']; ?>" readonly>
                                     </span>
-                                    </label>
-                                </div>
+                                    <button class="btn btn-link font-weight-bold" data-toggle="collapse" data-target="#form2">Změnit username</button>
+                                    <div class="collapse" id="form2">
+                                        <form action="" method="post">
+                                            <span class="input-group">
+                                                <span class="input-group-text fa-envelope"></span>
+                                                <input type="text" class="form-control" placeholder="nové uživatelské jméno" id="usernameZ" name="username" required >
+                                            </span>
+                                            <button type="submit" class="btn btn-primary " name="potvrzeni" value="zmenit">Ulozit zmenu</button>
+                                        </form>
+                                    </div>
+                                </label>
                             </div>
-                            <div class="row">
-                                <div class="form-group col-sm-12 col-xl-6 col-lg-6 col-md-6">
-                                    <label for="Jmeno_PrijmeniO">Jméno a Příjmení:
-                                        <span class="input-group">
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-sm-12 col-xl-6 col-lg-6 col-md-6">
+                                <label for="Jmeno_PrijmeniO">Jméno a Příjmení:
+                                    <span class="input-group">
                                         <span class="input-group-text fa-user"></span>
-                                        <input type="text" class="form-control" pid="Jmeno_PrijmeniO" name="jmeno" value="<?php echo $user['jmeno_prijmeni']; ?>" readonly >
+                                        <input type="text" class="form-control" id="Jmeno_PrijmeniO" name="jmeno" value="<?php echo $user['jmeno_prijmeni']; ?>" readonly >
                                     </span>
-                                    </label>
-                                </div>
-                                <div class="form-group col-sm-12 col-xl-6 col-lg-6 col-md-6">
-                                    <label for="PohlaviO">Pohlaví:
-                                        <span class="input-group">
+                                    <button class="btn btn-link font-weight-bold" data-toggle="collapse" data-target="#form3">Změnit jméno</button>
+                                    <div class="collapse" id="form3">
+                                        <form action="" method="post">
+                                            <span class="input-group">
+                                                <span class="input-group-text fa-envelope"></span>
+                                                <input type="text" class="form-control" placeholder="zadejte Jméno a Přijmení" id="Jmeno_Prijmeniz" name="jmeno_prijmeni" required >
+                                            </span>
+                                            <button type="submit" class="btn btn-primary " name="potvrzeni" value="zmenit">Ulozit zmenu</button>
+                                        </form>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="form-group col-sm-12 col-xl-6 col-lg-6 col-md-6">
+                                <label for="PohlaviO">Pohlaví:
+                                    <span class="input-group">
                                         <span class="input-group-text fa-calendar"></span>
-                                         <input type="text" class="form-control" id="PohlaviO" name="pohlavi" value="<?php echo $user['pohlavi']; ?>" readonly>
+                                        <input type="text" class="form-control" id="PohlaviO" name="pohlavi" value="<?php echo $user['pohlavi']; ?>" readonly>
                                     </span>
-                                    </label>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="form-group col-sm-12 col-xl-6 col-lg-6 col-md-6" >
+                                <label for="NarozeniO">Datum narození:
+                                    <span class="input-group">
+                                        <span class="input-group-text fa-calendar"></span>
+                                        <input type="date" class="form-control"  id="NarozeniO" name="narozeni" value="<?php echo $user['datum_narozeni']; ?>" readonly>
+                                    </span>
+                                </label>
+                            </div>
+                            <div class="form-group col-sm-12 col-xl-6 col-lg-6 col-md-6" >
+                                <label for="PravoO">Právo:
+                                    <span class="input-group">
+                                        <span class="input-group-text fa-calendar"></span>
+                                        <input type="text" class="form-control" id="PravoO" name="pravo" value="<?php echo $db->getRightById($user['id_pravo'])['nazev'] ?>" readonly>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                                <div class="col-12 text-center">
+                                    <button class="btn btn-link font-weight-bold" data-toggle="collapse" data-target="#form4">Změnit heslo</button>
+                                </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="container">
+                                <div class="collapse" id="form4">
+                                    <form action="" method="post">
+                                        <div class="form-group col-12 text-center">
+                                            <label for="passwordZ1">Původní heslo:
+                                                <span class="input-group input-group">
+                                                    <span class="fa-lock input-group-text"></span>
+                                                    <input type="password" class="form-control" placeholder="zadejte puvodni heslo" id="passwordZ1" name="heslo1" minlength="1" required>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="form-group col-12 text-center">
+                                            <label for="passwordZ2">Nové heslo:
+                                                <span class="input-group input-group">
+                                                    <span class="fa-lock input-group-text"></span>
+                                                    <input type="password" class="form-control" placeholder="zadejte nové heslo" id="passwordZ2" name="heslo2" minlength="1" required>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="form-group col-12 text-center">
+                                            <label for="passwordZ3">Kontrola hesla:
+                                                <span class="input-group input-group">
+                                                    <span class="fa-lock input-group-text"></span>
+                                                    <input type="password" class="form-control" placeholder="zopakujte heslo" id="passwordZ3" name="heslo3" minlength="1" oninput="validate_pw2(this,'passwordZ2')" required>
+                                                </span>
+                                            </label>
+                                        </div>
+                                        <div class="form-group col-12 text-center">
+                                            <button type="submit" class="btn btn-primary " name="potvrzeni" value="zmenit">Ulozit zmenu</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
-
-                            <div class="row">
-                                <div class="form-group col-sm-12 col-xl-6 col-lg-6 col-md-6" >
-                                    <label for="NarozeniO">Datum narození:
-                                        <span class="input-group">
-                                        <span class="input-group-text fa-calendar"></span>
-                                         <input type="date" class="form-control"  id="NarozeniO" name="narozeni" value="<?php echo $user['datum_narozeni']; ?>" readonly>
-                                    </span>
-                                    </label>
-                                </div>
-                                <div class="form-group col-sm-12 col-xl-6 col-lg-6 col-md-6" >
-                                    <label for="PravoO">Datum narození:
-                                        <span class="input-group">
-                                        <span class="input-group-text fa-calendar"></span>
-                                         <input type="text" class="form-control" id="PravoO" name="pravo" value="<?php echo $db->getRightById($user['id_pravo'])['nazev'] ?>" readonly>
-                                    </span>
-                                    </label>
-                                </div>
-                            </div>
-
-
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-
-        <table>
-            <tr><td>Uživatelské jméno:</td><td><?php echo $user['username']; ?></td></tr>
-            <tr><td>Jméno:</td><td><input type="text" name="jmeno" value="<?php echo $user['jmeno_prijmeni']; ?>" readonly</td></tr>
-            <tr><td>E-mail:</td><td><input type="email" name="email" value="<?php echo $user['email']; ?>" readonly></td></tr>
-            <tr><td>Právo:</td>
-                <td>
-                    <select name="pravo">
-                        <?php
-                        // ziskam vsechna prava
-                        $rights = $db->getAllRights();
-                        // projdu je a vypisu
-                        foreach($rights as $r){
-                            $selected = ($user['id_pravo'] == $r['id_pravo']) ? "selected" : "";
-                            echo "<option value='$r[id_pravo]' $selected>$r[nazev]</option>";
-                        }
-                        ?>
-                    </select>
-                </td>
-            </tr>
-        </table>
     </div>
 <?php
 }
@@ -473,9 +555,9 @@ if(!$login->isUserLogged()){
 </footer>
 
 <script>
-    function validate_pw2(pw2) {
-        if (pw2.value !== document.getElementById("passwordR").value) {
-            pw2.setCustomValidity("Dublicitní heslo bylo chybně zadáno");
+    function validate_pw2(pw2, pw1) {
+        if (pw2.value !== document.getElementById(pw1).value) {
+            pw2.setCustomValidity("Duplicitní heslo bylo chybně zadáno");
         } else {
             pw2.setCustomValidity(""); // je správné
         }

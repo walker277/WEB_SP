@@ -256,6 +256,67 @@ class MyDatabase {
         return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
     }
 
+    /**
+     * Uprava konkretniho uzivatele v databazi.
+     * @param int $idUzivatel   ID upravovaneho uzivatele.
+     * @return bool             Bylo upraveno?
+     */
+    public function updateUserEmail(int $idUzivatel,  string $email){
+        // slozim cast s hodnotami
+        $updateStatementWithValues = " email='$email'";
+        // podminka
+        $whereStatement = "id_uzivatel=$idUzivatel";
+        // provedu update
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+    }
+
+    /**
+     * Uprava konkretniho uzivatele v databazi.
+     *
+     * @param int $idUzivatel   ID upravovaneho uzivatele.
+     * @param string $login     Login.
+     * @return bool             Bylo upraveno?
+     */
+    public function updateUsername(int $idUzivatel, string $login){
+        // slozim cast s hodnotami
+        $updateStatementWithValues = " username='$login'";
+        // podminka
+        $whereStatement = "id_uzivatel=$idUzivatel";
+        // provedu update
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+    }
+
+    /**
+     * Uprava konkretniho uzivatele v databazi.
+     *
+     * @param int $idUzivatel   ID upravovaneho uzivatele.
+     * @return bool             Bylo upraveno?
+     */
+    public function updateUserJmeno(int $idUzivatel, string $jmeno){
+        // slozim cast s hodnotami
+        $updateStatementWithValues = " jmeno_prijmeni='$jmeno'";
+        // podminka
+        $whereStatement = "id_uzivatel=$idUzivatel";
+        // provedu update
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+    }
+
+    /**
+     * Uprava konkretniho uzivatele v databazi.
+     *
+     * @param int $idUzivatel   ID upravovaneho uzivatele.
+     * @param string $heslo     Heslo.
+     * @return bool             Bylo upraveno?
+     */
+    public function updateUserPass(int $idUzivatel, string $heslo){
+        // slozim cast s hodnotami
+        $updateStatementWithValues = "password='$heslo'";
+        // podminka
+        $whereStatement = "id_uzivatel=$idUzivatel";
+        // provedu update
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+    }
+
     ///////////////////  KONEC: Konkretni funkce  ////////////////////////////////////////////
 
     ///////////////////  Sprava prihlaseni uzivatele  ////////////////////////////////////////
