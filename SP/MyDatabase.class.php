@@ -309,8 +309,52 @@ class MyDatabase {
      * @return bool             Bylo upraveno?
      */
     public function updateUserPass(int $idUzivatel, string $heslo){
+        //zahashovani hesla
+        $hash = password_hash($heslo, PASSWORD_BCRYPT);
         // slozim cast s hodnotami
-        $updateStatementWithValues = "password='$heslo'";
+        $updateStatementWithValues = "password='$hash'";
+        // podminka
+        $whereStatement = "id_uzivatel=$idUzivatel";
+        // provedu update
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+    }
+    /**
+     * Uprava konkretniho uzivatele v databazi.
+     *
+     * @param int $idUzivatel   ID upravovaneho uzivatele.
+     * @param int $idPravo      ID prava.
+     * @return bool             Bylo upraveno?
+     */
+    public function updateUserRight(int $idUzivatel, int $idPravo){
+        $updateStatementWithValues = "id_pravo='$idPravo'";
+        // podminka
+        $whereStatement = "id_uzivatel=$idUzivatel";
+        // provedu update
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+    }
+
+    /**
+     * Uprava konkretniho uzivatele v databazi.
+     * @param string $pohlavi   pohlavi
+     * @param int $idUzivatel   ID upravovaneho uzivatele.
+     * @return bool             Bylo upraveno?
+     */
+    public function updateUserGender(int $idUzivatel, string $pohlavi){
+        $updateStatementWithValues = "pohlavi='$pohlavi'";
+        // podminka
+        $whereStatement = "id_uzivatel=$idUzivatel";
+        // provedu update
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+    }
+
+    /**
+     * Uprava konkretniho uzivatele v databazi.
+     * @param string $date      datum narozeni
+     * @param int $idUzivatel   ID upravovaneho uzivatele.
+     * @return bool             Bylo upraveno?
+     */
+    public function updateUserDate(int $idUzivatel, string $date){
+        $updateStatementWithValues = "datum_narozeni='$date'";
         // podminka
         $whereStatement = "id_uzivatel=$idUzivatel";
         // provedu update
@@ -330,17 +374,22 @@ class MyDatabase {
      */
     public function userLogin(string $login, string $heslo):bool {
         // ziskam uzivatele z DB - primo overuju login i heslo
-        $where = "username='$login' AND password='$heslo'";
+        $where = "username='$login'";
         $user = $this->selectFromTable(TABLE_UZIVATEL, $where);
+
         // ziskal jsem uzivatele
         if(count($user)){
-            // ziskal - ulozim ID prvniho nalezeneho uzivatele do session
-            $_SESSION[$this->userSessionKey] = $user[0]['id_uzivatel']; // beru prvniho nalezeneho a ukladam jen jeho ID
-            //$this->mySession->addSession(self::KEY_USER, $user[0]['id_uzivatel']);
-            return true;
+            if(password_verify($heslo, $user[0]['password'])){//test jestli uzivatelovo heslo v databazi se shoduje s heslem zadanym
+                // ziskal - ulozim ID prvniho nalezeneho uzivatele do session
+                $_SESSION[$this->userSessionKey] = $user[0]['id_uzivatel']; // beru prvniho nalezeneho a ukladam jen jeho ID
+                return true;
+            }else{
+                return false;
+            }
+        }else{//neziskal jsem uzivatele
+            return false;
         }
-        // neziskal jsem uzivatele
-        return false;
+
     }
 
     /**

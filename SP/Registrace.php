@@ -142,11 +142,10 @@ if(!$db->isUserLogged()){
                     && ($_POST['heslo1'] == $_POST['heslo2'])
                     && ($_POST['email'] != "") && ($_POST['username'] != "") && ($_POST['jmeno'] != "") && ($_POST['heslo1'] != "")
                     && ($_POST['narozeni'] != "") && ($_POST['heslo2'] != "") && ($_POST['pohlavi'] != "") ){
-                    //sifrovat heslo !!!!!!!!!!!!!!§§
+
                     $password = $_POST['heslo2'];
+                    //zahashovani hesla
                     $hash = password_hash($password, PASSWORD_BCRYPT);
-                    //pro verifikaci
-                    password_verify($password, $hash);
                     if($db->jeUsernameVolne($_POST['username'],$db->getAllUsers())){
                         $res = $db->addNewUser($_POST['username'], $hash, $_POST['jmeno'], $_POST['email'], 4, $_POST['pohlavi'], $_POST['narozeni'] );
                     }else{
@@ -206,7 +205,7 @@ if(!$db->isUserLogged()){
                                 <label for="passwordR">Heslo:
                                     <span class="input-group input-group">
                                         <span class="fa-lock input-group-text"></span>
-                                        <input type="password" class="form-control" placeholder="zadejte heslo" id="passwordR" name="heslo1" minlength="13" required>
+                                        <input type="password" class="form-control" placeholder="zadejte heslo" id="passwordR" name="heslo1" minlength="1" required>
                                     </span>
                                 </label>
                             </div>
@@ -225,7 +224,7 @@ if(!$db->isUserLogged()){
                                 <label for="passwordR2">Kontrola (Zopakujte heslo):
                                     <span class="input-group">
                                         <span class="input-group-text fa-lock"></span>
-                                        <input type="password" class="form-control" placeholder="zopakujte zadání hesla" name="heslo2" id="passwordR2" minLength=13 oninput="validate_pw2(this,'passwordR')" required>
+                                        <input type="password" class="form-control" placeholder="zopakujte zadání hesla" name="heslo2" id="passwordR2" minLength=1 oninput="validate_pw2(this,'passwordR')" required>
                                     </span>
                                 </label>
                             </div>
@@ -298,8 +297,9 @@ if(!$db->isUserLogged()){
             }
         } elseif( (isset($_POST['heslo1']) && $_POST['heslo1'] != "") && (isset($_POST['heslo2']) && $_POST['heslo2'] != "")
                    && (isset($_POST['heslo3']) && $_POST['heslo3'] != "") && ($_POST['heslo2'] == $_POST['heslo3']) ){
+
             //bylo zadano spravne soucasne heslo
-            if($_POST['heslo1'] == $user['password']){
+            if(password_verify($_POST['heslo1'],$user['password'])){
                 $res = $db->updateUserPass($UzivID, $_POST['heslo2']);
                 if($res){
                     echo "<script>alert('OK: Uživatel byl upraven.');</script>";
