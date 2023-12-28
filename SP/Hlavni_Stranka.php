@@ -208,6 +208,34 @@ if(!$db->isUserLogged()){
             }else{
                 echo "<script>alert('ERRO: Smazaní uživatle se nezdařilo');</script>";
             }
+        }else if( (isset($_POST['emailSez']) && ($_POST['emailSez'] != "")) && (isset($_POST['id_uziv']) && ($_POST['id_uziv'] != "")) ){
+            $res = $db->updateUserEmail($_POST['id_uziv'], $_POST['emailSez']);
+            if($res){
+                echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+            }else{
+                echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+            }
+        }elseif ( (isset($_POST['usernameSez']) && ($_POST['usernameSez'] != "")) && (isset($_POST['id_uziva']) && ($_POST['id_uziva'] != "")) ){
+            $res = $db->updateUsername($_POST['id_uziva'], $_POST['usernameSez']);
+            if($res){
+                echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+            }else{
+                echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+            }
+        }elseif ( (isset($_POST['jmenoSez']) && ($_POST['jmenoSez'] != "")) && (isset($_POST['id_uzivat']) && ($_POST['id_uzivat'] != "")) ){
+            $res = $db->updateUserJmeno($_POST['id_uzivat'], $_POST['jmenoSez']);
+            if($res){
+                echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+            }else{
+                echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+            }
+        }elseif( (isset($_POST['hesloSez']) && $_POST['hesloSez'] != "") && (isset($_POST['id_uzivate']) && ($_POST['id_uzivate'] != "")) ){
+            $res = $db->updateUserPass($_POST['id_uzivate'], $_POST['hesloSez']);
+            if($res){
+                echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+            }else{
+                echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+            }
         }
     }
     $users = $db->getAllUsers();
@@ -241,30 +269,90 @@ if(!$db->isUserLogged()){
         </nav>
     </div>
     <div class="lingrad">
-    <div class="container-fluid">
-        <h2 class="py-3 font-weight-bold text-primary"> Domovská stránka</h2>
-            <h3>Seznam uživatelů</h3>
+        <div class="container-fluid">
+            <h2 class="py-3 font-weight-bold text-primary"> Domovská stránka</h2>
+        </div>
+
+        <div class="bg-dark text-center">
+            <a class="font-weight-bold" href="#">Žebříček nejlikovanějších uživatelů</a>
+            <span>|</span>
+            <a  class="font-weight-bold" href="#">Žebříček nejaktivnějších uživatelů</a>
+            <span>|</span>
+            <a class="font-weight-bold" href="#">Žebříček uživatelů s nejvíce recenzemi</a>
+
+            <hr class=" border border-primary">
+            <p class="font-weight-normal text-justify text-center text-light font-italic">*Maecenas eget sapien massa. Sed eget risus non dui tristique tincidunt vel tincidunt urna. Nunc eu mauris et purus consectetur finibus. Ut vitae dignissim purus.</p>
+        </div>
+
+        <div class="container-fluid">
+        <?php
+        //ulozeni prava aktualne prihlaseneho uzivatele
+        $p = $db->getLoggedUserData()['id_pravo'];
+
+
+        if($p < 3) { //tabulka neni urcena pro recenzenty nebo autory
+        ?>
+            <h4>Nově zveřejněné příspěvky</h4>
+            <h4>Seznam uživatelů</h4>
             <div class="table-responsive">
                 <table class="table table-bordered table-striped table-secondary table-hover">
                     <thead class="thead-dark text-center">
                     <tr><th>ID</th><th>Uživatelské Jméno</th><th>Jméno</th><th>E-mail</th>
-                        <th>Změnit právo</th><th>Pohlaví</th><th>Datum narození</th><th>Smazat</th></tr>
+                        <th>Změnit právo</th><th>Pohlaví</th><th>Datum narození</th><th>Heslo</th><th>Smazat</th></tr>
                     </thead>
                     <?php
                     // projdu uzivatele a vypisu je
                     foreach ($users as $u) {
+                        //pokud je pravo uzivatele vetsi nez prihlaseneho nebo je prihlaseny uzivatel autro ci recenzent,
+                        // tak ho preskocime protoze prihlaseny nemuze uzivatele menit, popripade tato tabulka pro nej neni urcena
+                        if($u['id_pravo'] <= $p ){
+                            continue;
+                        }
                         echo "<tr>
                               <td class='align-middle text-center'>
                                 $u[id_uzivatel]
                               </td>
                               <td class='align-middle text-center'>
-                                $u[username]
+                                <div>
+                                   $u[username] 
+                                </div>                        
+                                <form action='' method='post'>                                    
+                                    <div class='py-3'>
+                                        <input type='text' class='form-control text-center' placeholder='Nový username' name='usernameSez' required >
+                                    </div>
+                                    <div class='py-3'>
+                                        <input type='hidden' name='id_uziva' value='$u[id_uzivatel]'>
+                                        <button class='btn btn-outline-dark' type='submit' name='potvrzeni' value='zmenit'>zmenit</button>
+                                    </div>
+                                </form>                           
                               </td>
                               <td class='align-middle text-center'>
-                                $u[jmeno_prijmeni]
+                                <div>
+                                   $u[jmeno_prijmeni] 
+                                </div>
+                                <form action='' method='post'>                                    
+                                    <div class='py-3'>
+                                        <input type='text' class='form-control text-center' placeholder='Nové jméno' name='jmenoSez' required >
+                                    </div>
+                                    <div class='py-3'>
+                                        <input type='hidden' name='id_uzivat' value='$u[id_uzivatel]'>
+                                        <button class='btn btn-outline-dark' type='submit' name='potvrzeni' value='zmenit'>zmenit</button>
+                                    </div>
+                                </form>   
                               </td>
                               <td class='align-middle text-center'>
-                                $u[email]
+                                <div>
+                                   $u[email] 
+                                </div>                                  
+                                <form action='' method='post'>                                    
+                                    <div class='py-3'>
+                                        <input type='text' class='form-control text-center' placeholder='Nový email' name='emailSez' required >
+                                    </div>
+                                    <div class='py-3'>
+                                        <input type='hidden' name='id_uziv' value='$u[id_uzivatel]'>
+                                        <button class='btn btn-outline-dark' type='submit' name='potvrzeni' value='zmenit'>zmenit</button>
+                                    </div>
+                                </form>
                               </td>
                               <td class='align-middle text-center'>"
                                 ."<form action='' method='post'>"
@@ -297,6 +385,9 @@ if(!$db->isUserLogged()){
                                     ."</div>"
                                 ."</form>"
                             ."<td class='align-middle text-center'>"
+                                ."<div>"
+                                    ."$u[datum_narozeni]"
+                                ."</div> "
                                 ."<form action='' method='post'>"
                                     ."<div class='py-3'>"
                                         ."<input type='date' class='form-control' value=$u[datum_narozeni] name='datum' required >"
@@ -307,6 +398,17 @@ if(!$db->isUserLogged()){
                                     ."</div>"
                                 ."</form>"
                             ."</td>
+                            .<td class='align-middle text-center'>                                                               
+                                <form action='' method='post'>                                    
+                                    <div class='py-3'>
+                                        <input type='text' class='form-control text-center' placeholder='Nové heslo' name='hesloSez' required >
+                                    </div>
+                                    <div class='py-3'>
+                                        <input type='hidden' name='id_uzivate' value='$u[id_uzivatel]'>
+                                        <button class='btn btn-outline-dark' type='submit' name='potvrzeni' value='zmenit'>zmenit</button>
+                                    </div>
+                                </form>
+                            .</td>
                             .<td class='align-middle text-center'>"
                                 ."<form action='' method='POST'>
                                       <input type='hidden' name='id_uzivatel' value='$u[id_uzivatel]'>
@@ -317,6 +419,52 @@ if(!$db->isUserLogged()){
                     ?>
                 </table>
             </div>
+        <?php
+        } else{ //tabulka pro autory a recenzenty
+          ?>
+            <h4>Seznam uživatelů</h4>
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-secondary table-hover">
+                    <thead class="thead-dark text-center">
+                    <tr><th>Uživatelské Jméno</th><th>Jméno</th></th><th>Pohlaví</th><th>Datum narození</th><th>Pocet zveřejněných příspěvků</th><th>odkaz na seznam se všemi příspěvky uživatele</th></tr>
+                    </thead>
+                    <?php
+                    // projdu uzivatele a vypisu je
+                    foreach ($users as $u) {
+                        //pokud je pravo uzivatele vetsi nez prihlaseneho nebo je prihlaseny uzivatel autro ci recenzent,
+                        // tak ho preskocime protoze prihlaseny nemuze uzivatele menit, popripade tato tabulka pro nej neni urcena
+                        if($u['id_pravo'] == 1 || $u['id_pravo'] == 2  ){ //preskocime admini a superAdmini protoze ty nechceme zobrazovat
+                            continue;
+                        }
+                        echo "<tr>
+                             <td class='align-middle text-center'>
+                                <div>
+                                   $u[username] 
+                                </div>                                                
+                              </td>
+                              <td class='align-middle text-center'>
+                                <div>
+                                   $u[jmeno_prijmeni] 
+                                </div>
+                              </td>";
+                        echo "<td class='align-middle text-center'>
+                                <div>
+                                   $u[pohlavi] 
+                                </div>
+                              </td>";
+                        echo "<td class='align-middle text-center'>
+                                <div>
+                                    $u[datum_narozeni] 
+                                </div>
+                              </td>";
+                        echo "</td></tr>";
+                    }
+                    ?>
+                </table>
+            </div>
+        <?php
+        } //konec else vetve
+        ?>
     </div>
     </div>
 
