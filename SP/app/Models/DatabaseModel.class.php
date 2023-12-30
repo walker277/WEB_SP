@@ -1,13 +1,9 @@
 <?php
-//////////////////////////////////////////////////////////////
-////////////// Vlastni trida pro praci s databazi ////////////////
-//////////////////////////////////////////////////////////////
 
 /**
- * Vlastni trida spravujici databazi.
+ * Trida spravujici databazi.
  */
-class MyDatabase {
-
+class DatabaseModel{
     /** @var PDO $pdo  PDO objekt pro praci s databazi. */
     private $pdo;
 
@@ -35,8 +31,6 @@ class MyDatabase {
         require_once("MySession.class.php");
         $this->mySession = new MySession();
     }
-
-
     ///////////////////  Obecne funkce  ////////////////////////////////////////////
 
     /**
@@ -226,12 +220,14 @@ class MyDatabase {
      * @param int $idPravo      Je cizim klicem do tabulky s pravy.
      * @return bool             Vlozen v poradku?
      */
-    public function addNewUser(string $login, string $heslo, string $jmeno, string $email, int $idPravo = 4, string $pohlavi, string $datum){
+    public function addNewUser(string $login, string $heslo, string $jmeno, string $email, int $idPravo, string $pohlavi, string $datum){
+        $idPravo = 4;
+        $zablokovany = 0;
         // hlavicka pro vlozeni do tabulky uzivatelu
-        $insertStatement = "id_pravo, jmeno_prijmeni, username, password, email, pohlavi, datum_narozeni";
+        $insertStatement = "id_pravo, jmeno_prijmeni, username, password, email, pohlavi, datum_narozeni, Zablokovany";
         // hodnoty pro vlozeni do tabulky uzivatelu
         //$insertValues = "'$login', '$heslo', '$jmeno', '$email', $idPravo";
-        $insertValues = "'$idPravo', '$jmeno', '$login', '$heslo', '$email', '$pohlavi', '$datum'";
+        $insertValues = "'$idPravo', '$jmeno', '$login', '$heslo', '$email', '$pohlavi', '$datum', '$zablokovany'";
         // provedu dotaz a vratim jeho vysledek
         return $this->insertIntoTable(TABLE_UZIVATEL, $insertStatement, $insertValues);
     }
@@ -360,7 +356,19 @@ class MyDatabase {
         // provedu update
         return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
     }
-
+    /**
+     * Uprava konkretniho uzivatele v databazi.
+     * @param int $povol     int signalizujici povoleni
+     * @param int $idUzivatel   ID upravovaneho uzivatele.
+     * @return bool             Bylo upraveno?
+     */
+    public function updateZablokovaniUzivatele(int $idUzivatel, int $povol){
+        $updateStatementWithValues = "Zablokovany='$povol'";
+        // podminka
+        $whereStatement = "id_uzivatel=$idUzivatel";
+        // provedu update
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+    }
     ///////////////////  KONEC: Konkretni funkce  ////////////////////////////////////////////
 
     ///////////////////  Sprava prihlaseni uzivatele  ////////////////////////////////////////
@@ -457,15 +465,13 @@ class MyDatabase {
                 // vracim null
                 return null;
             }else{
-               return $_SESSION[$this->userSessionKey];
+                return $_SESSION[$this->userSessionKey];
             }
         }else{
             // uzivatel neni prihlasen - vracim null
             return null;
         }
     }
-
-    ///////////////////  KONEC: Sprava prihlaseni uzivatele  ////////////////////////////////////////
 
     /**
      * Vrati true pokud je volne false pokud neni
@@ -483,6 +489,11 @@ class MyDatabase {
         }
         return $volne;
     }
+    ///////////////////  KONEC: Sprava prihlaseni uzivatele  ////////////////////////////////////////
+
 }
 
 ?>
+
+
+
