@@ -138,7 +138,6 @@ class OsobniUdajeController implements IController {
         if($tplData['prihlasen']) {
             //ulozim si data o uzivateli do pole
             $tplData['uzivatel'] = $this->db->getLoggedUserData();
-            var_dump($tplData['prihlasen']);
             //// vypsani prislusne sablony
             // zapnu output buffer pro odchyceni vypisu sablony
             ob_start();

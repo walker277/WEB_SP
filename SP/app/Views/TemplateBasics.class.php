@@ -61,6 +61,15 @@ class TemplateBasics {
                         </li>
                         <?php
                         echo  "<li class='nav-item'>";
+                        if($id_pravo == 4) { //ta
+                            $key = "mojeClanky";
+                            $pInfo = WEB_PAGES["mojeClanky"]["title"];
+                            echo "<a class='nav-link' href='index.php?page=$key'>$pInfo</a>";
+                        }
+                        echo "</li>";
+                        ?>
+                        <?php
+                        echo  "<li class='nav-item'>";
                         if($id_pravo < 3) { //ta
                             $key = "spravaUzivatelu";
                             $pInfo = WEB_PAGES["spravaUzivatelu"]["title"];
@@ -68,7 +77,6 @@ class TemplateBasics {
                         }
                         echo "</li>";
                         ?>
-
                         <li class="nav-item">
                             <form method="post">
                                 <button class="btn-outline-danger text-dark font-weight-bold border-dark" name="action" value="logout">Odhlásit se</button>
@@ -164,15 +172,6 @@ class TemplateBasics {
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row" >
-                                        <div class="col-12">
-                                            <div class="form-group form-check">
-                                                <label class="form-check-label">
-                                                    <input class="form-check-input" type="checkbox"> Zapamatovat si mě
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
                                     <div class="row">
                                         <div class="col-12">
                                             <button type="submit" name="action" value="login" class="btn btn-primary">Přihlásit</button>
@@ -203,7 +202,7 @@ class TemplateBasics {
     ?>
     <footer class="container-fluid bg-dark text-white text-center font-weight-bold py-3">
         <div class="container-fluid text-justify">
-            <form action="http://students.kiv.zcu.cz/~nyklm/+studenti-kiv-web/formular-zobrazeni.php" method="POST"
+            <form action="" method="POST"
                   target="_blank" accept-charset="UTF-8" autocomplete="off" enctype="multipart/form-data">
                 <div class="row">
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">

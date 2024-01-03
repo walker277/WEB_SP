@@ -40,21 +40,20 @@ class RegistraceController implements IController {
                 && ($_POST['heslo1'] == $_POST['heslo2'])
                 && ($_POST['email'] != "") && ($_POST['username'] != "") && ($_POST['jmeno'] != "") && ($_POST['heslo1'] != "")
                 && ($_POST['narozeni'] != "") && ($_POST['heslo2'] != "") && ($_POST['pohlavi'] != "") ){
-
                 $password = $_POST['heslo2'];
                 //zahashovani hesla
                 $hash = password_hash($password, PASSWORD_BCRYPT);
                 if($this->db->jeUsernameVolne($_POST['username'],$this->db->getAllUsers())){
-                    $res = $this->db->addNewUser($_POST['username'], $hash, $_POST['jmeno'], $_POST['email'], 4, $_POST['pohlavi'], $_POST['narozeni'] );
+                    $res = $this->db->addNewUser($_POST['username'], $hash, $_POST['jmeno'], $_POST['email'], 4, $_POST['pohlavi'], $_POST['narozeni'] );//byl vlozen?
+                    if($res){
+                        echo "<script>alert('OK: Uživatel byl přidán do databáze');</script>";
+                    }else{
+                        echo "<script>alert('ERROR: Vložení uživatle do databáze se nezdařilo');</script>";
+                    }
                 }else{
                     echo "<script>alert('ERROR: Uzivatelske jmeno je zabrane, a proto si zvolte jine');</script>";
                 }
-                //byl vlozen?
-                if($res){
-                    echo "<script>alert('OK: Uživatel byl přidán do databáze');</script>";
-                }else{
-                    echo "<script>alert('ERROR: Vložení uživatle do databáze se nezdařilo');</script>";
-                }
+
             }else{ //nemame vsechny atributy
                 echo "<script>alert('ERROR: Nebyly přijaty požadované atributy uživatele');</script>";
             }

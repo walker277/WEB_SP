@@ -178,6 +178,167 @@ class DatabaseModel{
     }
 
     /**
+     * Ziskani zaznamu vsech clanku aplikace.
+     *
+     * @return array    Pole se vsemi uzivateli.
+     */
+    public function getAllClanky(){
+        // ziskam vsechny uzivatele z DB razene dle ID a vratim je
+        $clanky = $this->selectFromTable(TABLE_CLANEK, "", "idCLANEK");
+        if($clanky != null){
+            return $clanky;
+        }else{
+            return null;
+        }
+    }
+
+    public function getAllClankyAutoru(){
+        // ziskam vsechny uzivatele z DB razene dle ID a vratim je
+        $clanky = $this->selectFromTable(TABLE_CLANKY_AUTORA, "", "idClankyAutora");
+        if($clanky != null){
+            return $clanky;
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * Ziskani zaznamu vsech id clanku aplikace uzivatele.
+     *
+     * @return array    Pole se vsemi uzivateli.
+     */
+    public function getAllAutoroviClankyID($uzivatelID, $clankyAutoru){
+        // ziskam vsechny uzivatele z DB razene dle ID a vratim je
+
+        $IDclankuUzivatele = [];
+        if($clankyAutoru != null){
+            foreach ($clankyAutoru as $cA){
+                //pokud uzivatel clanek vytvoril
+                if($cA['id_uzivatel'] == $uzivatelID){
+                    //priradime id clanku do pole
+                    $IDclankuUzivatele[] = $cA['idCLANEK'];
+                }
+            }
+            if($IDclankuUzivatele != null){
+                //vratime pole s ID clankama
+                return $IDclankuUzivatele;
+            }else{
+                return null;
+            }
+        }else{
+            return null;
+        }
+
+    }
+
+    /**
+     * Ziskani zaznamu vsech clanku aplikace uzivatele.
+     *
+     * @return array    Pole se vsemi uzivateli.
+     */
+    public function getAllAutoroviClanky($IDclankuUzivatele, $clanky){
+        $autoroviClanky = [];
+        //jdeme postupne pres vsechny ID clanku ktere uzivatel vytvoril
+        if($clanky != null && $IDclankuUzivatele != null){
+            foreach ($IDclankuUzivatele as $idClanku){
+                // a jdeme pres clanky
+                foreach ($clanky as $c){
+                    //var_dump($c);
+                    //pokud se id clanku rovnaji pak clanek priradime do pole
+                    if($idClanku == $c['idCLANEK']){
+                        $autoroviClanky[] = $c;
+                    }
+                }
+            }
+        }
+        if($autoroviClanky!= null){
+            return $autoroviClanky;
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * Metoda vrati id uzivatelu kteří clanky vytvareli
+     * @param $IDclankuAutora
+     * @param $clankyAutoru
+     * @return array|mixed
+     */
+    public function getAllUzivIdClanku($IDclankuAutora, $clankyAutoru){
+        $idUzivatelu = [];
+        $autoriVClanku = [];
+        if($IDclankuAutora != null && $clankyAutoru != null){
+            //jdeme pres vsechny id clanku autora
+            foreach ($IDclankuAutora as $idA){
+                //jedeme pres vsechny clankyAutoru
+                foreach ($clankyAutoru as $cA){
+                    //pokud se id clanku autora shoduje s id clanku jineho autora
+                    if($idA == $cA['idCLANEK']){
+                        $idUzivatelu[] = $cA['id_uzivatel'];
+                    }
+                }
+                //pole se vsema id uzivatelu konkretniho clanku si ulozime do pole
+                $autoriVClanku[] = $idUzivatelu;
+                //vynullujeme a pro dalsi pruchod
+                $idUzivatelu = null;
+            }
+        }
+        //var_dump($idUzivatelu);
+        //var_dump($autoriVClanku);
+        if($autoriVClanku != null){
+            return $autoriVClanku;
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * Metoda vrati jmena uzivatelu kteri clanky vytvareli
+     * @param $IDAutoru
+     * @param $uzivatele
+     * @return array|mixed
+     */
+    public function getAllUzivClanku($IDAutoruClanku, $uzivatele){
+        $jmenaUziv = [];
+        $poleAutoruClanku = [];
+        if($IDAutoruClanku != null){
+            //jdeme pres vsechny clanky
+            foreach ($IDAutoruClanku as $idAC){
+                ///jdeme pres vsechny id uzivatelu konkretniho clanku
+                foreach ($idAC as $idU){
+                    //var_dump($idU);
+                    //jedeme pres vsechny clankyAutoru
+                    foreach ($uzivatele as $u){
+                        //pokud se id autora clanku shoduje s id uzivatele
+                        if($idU == $u['id_uzivatel']){
+                            //pridame jmeno uzivatele do pole
+                            $jmenaUziv[] = $u['jmeno_prijmeni'];
+                        }
+                    }
+                    $autori = '';
+                    // spojíme vsechny jmena do jednoho stringu
+                    foreach ($jmenaUziv as $autor){
+                        if($autori === ''){
+                            $autori = $autor;
+                        }else{
+                            $autori = $autori . ', ' . $autor;
+                        }
+                    }
+                    //pridame string autoru jednoho clanku do pole
+                    $poleAutoruClanku[] = $autori;
+                    //z resetujeme pro dalsi pruchod
+                    $jmenaUziv = null;
+                }
+            }
+        }
+        if($poleAutoruClanku != null){
+            return $poleAutoruClanku;
+        }else{
+            return null;
+        }
+    }
+
+    /**
      * Ziskani konkretniho prava uzivatele dle ID prava.
      *
      * @param int $id       ID prava.
@@ -488,6 +649,43 @@ class DatabaseModel{
             }
         }
         return $volne;
+    }
+
+    public function addNewClanek(string $clanek, string $cestaKsouboru, string $abstrakt, string $autori):bool{
+        $nula = 0;
+        $null = NULL;
+        //vlozeni noveho clanku do tabulky
+        $insertStatement = "schvalen, recenzent_1, recenzent_2, recenzent_3, hodnoceni_1, hodnoceni_2, hodnoceni_3, nazev, abstrakt, cesta, autori";
+        // hodnoty pro vlozeni do tabulky uzivatelu
+        $insertValues = "'0', '0', '0', '0', '0', '0', '0', '$clanek', '$abstrakt', '$cestaKsouboru', '$autori'";
+        // provedu dotaz a vratim jeho vysledek
+        return $this->insertIntoTable(TABLE_CLANEK, $insertStatement, $insertValues);
+    }
+    public function getPosledniClanek(){
+        $clanek = $this->selectFromTable(TABLE_CLANEK, "idCLANEK = (SELECT MAX(idCLANEK) FROM CLANEK)");
+        // vracim prvni nalezene pravo
+        return $clanek[0];
+
+    }
+    public function addNewClankyAutora($idClanku, $id_prihlasenehoU){
+        $insertStatement = "id_uzivatel, idCLANEK";
+        $insertValues = "'$id_prihlasenehoU', '$idClanku'";
+        return $this->insertIntoTable(TABLE_CLANKY_AUTORA, $insertStatement, $insertValues);
+    }
+
+    /**
+     * Metoda vrati pocet autoru
+     * @param $uzivatele
+     * @return int
+     */
+    public function getPocetAutoru($uzivatele){
+        $pocet = 0;
+        foreach ($uzivatele as $u){
+            if($u['id_pravo']==4 && $u['Zablokovany'] == 0){
+                $pocet++;
+            }
+        }
+        return $pocet;
     }
     ///////////////////  KONEC: Sprava prihlaseni uzivatele  ////////////////////////////////////////
 

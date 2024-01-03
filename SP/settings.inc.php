@@ -7,7 +7,7 @@
 
 // prihlasovaci udaje k databazi
 define("DB_SERVER","127.0.0.1");
-define("DB_NAME","SP");
+define("DB_NAME","WSP");
 define("DB_USER","root");
 define("DB_PASS","");
 
@@ -16,7 +16,8 @@ define("TABLE_UZIVATEL","UZIVATEL");
 define("TABLE_PRAVO","pravo");
 
 /** Tabulka s pohadkami. */
-define("TABLE_INTRODUCTION", "MVC_INTRODUCTION");
+define("TABLE_CLANEK", "CLANEK");
+define("TABLE_CLANKY_AUTORA", "CLANKY_AUTORA");
 
 /** Adresar kontroleru. */
 const DIRECTORY_CONTROLLERS = "app/Controllers";
@@ -85,6 +86,27 @@ const WEB_PAGES = array(
         //// kontroler
         "file_name" => "IntroductionController.class.php",
         "class_name" => "IntroductionController",
+    ),
+    "mojeClanky" => array(
+        "title" => "Moje clanky",
+
+        //// kontroler
+        "file_name" => "mojeClankyController.class.php",
+        "class_name" => "mojeClankyController",
+    ),
+    "mojeRecenze" => array(
+        "title" => "moje Recenze",
+
+        //// kontroler
+        "file_name" => "mojeRecenzeController.class.php",
+        "class_name" => "mojeRecenzeController",
+    ),
+    "recenze" => array(
+        "title" => "Recenze",
+
+        //// kontroler
+        "file_name" => "recenzeController.class.php",
+        "class_name" => "recenzeController",
     ),
     //// KONEC: Sprava uzivatelu ////
 );
