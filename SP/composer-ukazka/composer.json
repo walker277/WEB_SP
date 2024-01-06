@@ -5,6 +5,7 @@
         "components/font-awesome": "4.7.0",
         "twbs/bootstrap" : ">=4.1, <5.0",
         "alexandermatveev/popper-bundle": ">=1.0",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ckeditor/ckeditor": "^4.18"
     }
 }

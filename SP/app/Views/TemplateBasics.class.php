@@ -31,7 +31,15 @@ class TemplateBasics {
         </div>
         <div id="navbar" class="sticky-top" >
             <!-- Grey with black text -->
-            <nav class="navbar navbar-expand-sm bg-light navbar-light fa-star">MENU
+            <?php
+            if($id_pravo < 3){
+                $navbarExpand = 'navbar-expand-lg';
+            } else{
+                $navbarExpand = 'navbar-expand-md';
+            }
+            echo "<nav class='navbar $navbarExpand bg-light navbar-light fa-star'>";
+            ?>
+            MENU
                 <!-- Toggler/collapsibe Button -->
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
                     <span class="navbar-toggler-icon"></span>
@@ -71,8 +79,35 @@ class TemplateBasics {
                         <?php
                         echo  "<li class='nav-item'>";
                         if($id_pravo < 3) { //ta
+                            $key = "spravaclanku";
+                            $pInfo = WEB_PAGES["spravaclanku"]["title"];
+                            echo "<a class='nav-link' href='index.php?page=$key'>$pInfo</a>";
+                        }
+                        echo "</li>";
+                        ?>
+                        <?php
+                        echo  "<li class='nav-item'>";
+                        if($id_pravo < 3) { //ta
                             $key = "spravaUzivatelu";
                             $pInfo = WEB_PAGES["spravaUzivatelu"]["title"];
+                            echo "<a class='nav-link' href='index.php?page=$key'>$pInfo</a>";
+                        }
+                        echo "</li>";
+                        ?>
+                        <?php
+                        echo  "<li class='nav-item'>";
+                        if($id_pravo < 3) { //ta
+                            $key = "dotazy";
+                            $pInfo = WEB_PAGES["dotazy"]["title"];
+                            echo "<a class='nav-link' href='index.php?page=$key'>$pInfo</a>";
+                        }
+                        echo "</li>";
+                        ?>
+                        <?php
+                        echo  "<li class='nav-item'>";
+                        if($id_pravo == 3) { //ta
+                            $key = "mojeRecenze";
+                            $pInfo = WEB_PAGES["mojeRecenze"]["title"];
                             echo "<a class='nav-link' href='index.php?page=$key'>$pInfo</a>";
                         }
                         echo "</li>";
@@ -139,6 +174,13 @@ class TemplateBasics {
                         echo "<a class='nav-link' href='index.php?page=$key'>$pInfo</a>";
                         ?>
                     </li>
+                    <li class="nav-item">
+                        <?php
+                        $key = "domaci";
+                        $pInfo = WEB_PAGES["domaci"]["title"];
+                        echo "<a class='nav-link' href='index.php?page=$key'>$pInfo</a>";
+                        ?>
+                    </li>
                     <!--Dropdown-->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
@@ -202,8 +244,7 @@ class TemplateBasics {
     ?>
     <footer class="container-fluid bg-dark text-white text-center font-weight-bold py-3">
         <div class="container-fluid text-justify">
-            <form action="" method="POST"
-                  target="_blank" accept-charset="UTF-8" autocomplete="off" enctype="multipart/form-data">
+            <form action="" method="POST">
                 <div class="row">
                     <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
                         <div>
@@ -291,6 +332,7 @@ class TemplateBasics {
     <script src="composer-ukazka/vendor/components/jquery/jquery.min.js"></script>
     <script src="composer-ukazka/vendor/alexandermatveev/popper-bundle/AlexanderMatveev/PopperBundle/Resources/public/popper.min.js"></script>
     <script src="composer-ukazka/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="composer-ukazka/vendor/ckeditor/ckeditor/ckeditor.js"></script>
 
     </body>
     </html>

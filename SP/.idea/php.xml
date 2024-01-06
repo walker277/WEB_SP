@@ -17,6 +17,7 @@
       <path value="$PROJECT_DIR$/composer-ukazka/vendor/components/jquery" />
       <path value="$PROJECT_DIR$/composer-ukazka/vendor/alexandermatveev/popper-bundle" />
       <path value="$PROJECT_DIR$/composer-ukazka/vendor/twbs/bootstrap" />
+      <path value="$PROJECT_DIR$/composer-ukazka/vendor/ckeditor/ckeditor" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.2">
@@ -24,6 +25,11 @@
   </component>
   <component name="PhpStanOptionsConfiguration">
     <option name="transferred" value="true" />
+  </component>
+  <component name="PhpUnit">
+    <phpunit_settings>
+      <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/composer-ukazka/vendor/autoload.php" />
+    </phpunit_settings>
   </component>
   <component name="PsalmOptionsConfiguration">
     <option name="transferred" value="true" />

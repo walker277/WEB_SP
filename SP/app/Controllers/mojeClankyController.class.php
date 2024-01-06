@@ -31,6 +31,15 @@ class mojeClankyController implements IController {
         // nazev
         $tplData['title'] = $pageTitle;
         $tplData['uzivatele'] = $this->db->getAllUsers();
+        $tplData['clanky'] = $this->db->getAllClanky();
+        $tplData['uzivatele'] = $this->db->getAllUsers();
+
+        //otestovani jesli mame dotaz
+        if(isset($_POST['odeslano'])){
+            if ( (isset($_POST["email"]) && $_POST["email"] != "") && (isset($_POST["jmeno"]) && $_POST["jmeno"] != "") && (isset($_POST["dotaz"]) && $_POST["dotaz"] != "")) {
+                $this->db->addNewDotaz($_POST['email'], $_POST['jmeno'], $_POST['dotaz']);
+            }
+        }
 
         // zpracovani odeslanych formularu na prihlaseni - mam akci?
         if(isset($_POST["action"])){
@@ -100,11 +109,11 @@ class mojeClankyController implements IController {
             }
         }
 
-        $tplData['autori'][] = $this->db->getLoggedUserData()['jmeno_prijmeni'];
-        $tplData['autoriU'][] = $this->db->getLoggedUserData();
-        //$viceAutoru = false;
+        if($this->db->isUserLogged()){
+            $tplData['autori'][] = $this->db->getLoggedUserData()['jmeno_prijmeni'];
+            $tplData['autoriU'][] = $this->db->getLoggedUserData();
+        }
 
-        //$tplData['autoriU'] = $this->autoriU;
         //zpracovani formularu
         if(isset($_POST['pridat'])){
             if(isset($_POST['autor']) && $_POST['autor'] != ""){
@@ -180,7 +189,51 @@ class mojeClankyController implements IController {
                 echo "<script>alert('ERROR: Nebyly přijaty požadované atributy uživatele');</script>";
             }
         }
+        // pozadavek na odstraneni
+        if(isset($_POST['odstran']) && $_POST['odstran'] != "" && isset($_POST['clanekS']) && $_POST['clanekS'] != "" ){
+            //mažeme článek odstranit
+            $this->db->odstranClanek($_POST['clanekS']);
+        }
 
+        // pozadavek na upravu
+        if(isset($_POST['uprav']) && $_POST['uprav'] != "" && isset($_POST['clanekU']) && $_POST['clanekU'] != "" ){
+            //zmenil uzivatel název
+            if( isset($_POST['clanek']) && ($_POST['clanek'] != "")  ){
+                if(!$this->db->updateClanekNazev($_POST['clanek'],$_POST['clanekU'])){
+                    echo "<script>alert('ERROR: nazev se nepodarilo upravit');</script>";
+                }
+
+            }
+            //zmenil uzivatel cestu k souboru
+            $fileName = $_FILES['soubor']['name'];
+            $fileType = $_FILES['soubor']['type'];
+            $fileExt = explode('.',$fileName);
+            $fileSize = $_FILES['soubor']['size'];
+            //Pro případ že přípona je velkými převedeme na malé
+            $fileActualExt = strtolower(end($fileExt));
+            if($fileActualExt === 'pdf' && $fileType === 'application/pdf'){//test typu souboru
+                if($fileSize < 1000000){//test velikosti souboru
+                    $cesta = 'soubory/' .basename($_FILES["soubor"]["name"]);
+                    if (move_uploaded_file($_FILES["soubor"]["tmp_name"], $cesta)) {
+                        echo "<script>alert('OK: soubor byl nahran');</script>";
+                        if(!$this->db->updateClanekSoubor($cesta,$_POST['clanekU'])){
+                            echo "<script>alert('ERROR: cestu se nepodarilo upravit');</script>";
+                        }
+                    }else{
+                        echo "<script>alert('ERORR: nahravani souboru selhalo');</script>";
+                    }
+                }else{
+                    echo "<script>alert('ERROR: Soubor je moc velký!!!');</script>";
+                }
+            }
+
+            //zmenil uzivatel abstrakt
+            if (isset($_POST['abstrakt']) && ($_POST['abstrakt'] != "")){
+                if(!$this->db->updateClanekAbstrakt($_POST['abstrakt'],$_POST['clanekU'])){
+                    echo "<script>alert('ERROR: abstrakt se nepodarilo upravit');</script>";
+                }
+            }
+        }
 
 
         //ulozeni stavu prihlaseni abychom mohli v sablone rozlisovat hlavicky

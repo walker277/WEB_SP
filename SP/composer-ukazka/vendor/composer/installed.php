@@ -28,6 +28,15 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
+        'ckeditor/ckeditor' => array(
+            'pretty_version' => '4.23.0',
+            'version' => '4.23.0.0',
+            'reference' => '13a70b2385e6ff7805c2faff1278fca6e42646f7',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../ckeditor/ckeditor',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
         'components/font-awesome' => array(
             'pretty_version' => '4.7.0',
             'version' => '4.7.0.0',

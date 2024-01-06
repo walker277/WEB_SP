@@ -31,7 +31,16 @@ class RegistraceController implements IController {
         $tplData['title'] = $pageTitle;
 
         $rights = $this->db->getAllRights();
+        $tplData['clanky'] = $this->db->getAllClanky();
+        $tplData['uzivatele'] = $this->db->getAllUsers();
 
+
+        //otestovani jesli mame dotaz
+        if(isset($_POST['odeslano'])){
+            if ( (isset($_POST["email"]) && $_POST["email"] != "") && (isset($_POST["jmeno"]) && $_POST["jmeno"] != "") && (isset($_POST["dotaz"]) && $_POST["dotaz"] != "")) {
+                $this->db->addNewDotaz($_POST['email'], $_POST['jmeno'], $_POST['dotaz']);
+            }
+        }
 
         if(isset($_POST['potvrzeni'])){
             //mam vsechny pozadovane hodnoty?

@@ -18,6 +18,7 @@ define("TABLE_PRAVO","pravo");
 /** Tabulka s pohadkami. */
 define("TABLE_CLANEK", "CLANEK");
 define("TABLE_CLANKY_AUTORA", "CLANKY_AUTORA");
+define("TABLE_DOTAZ", "DOTAZ");
 
 /** Adresar kontroleru. */
 const DIRECTORY_CONTROLLERS = "app/Controllers";
@@ -80,33 +81,41 @@ const WEB_PAGES = array(
         "file_name" => "spravaUzivateluController.class.php",
         "class_name" => "spravaUzivatelu",
     ),
-    "domaci" => array(
-        "title" => "Domů",
-
-        //// kontroler
-        "file_name" => "IntroductionController.class.php",
-        "class_name" => "IntroductionController",
-    ),
     "mojeClanky" => array(
-        "title" => "Moje clanky",
+        "title" => "Moje články",
 
         //// kontroler
         "file_name" => "mojeClankyController.class.php",
         "class_name" => "mojeClankyController",
     ),
     "mojeRecenze" => array(
-        "title" => "moje Recenze",
+        "title" => "Moje recenze",
 
         //// kontroler
         "file_name" => "mojeRecenzeController.class.php",
         "class_name" => "mojeRecenzeController",
     ),
-    "recenze" => array(
-        "title" => "Recenze",
+    "spravaclanku" => array(
+        "title" => "Správa článků",
 
         //// kontroler
-        "file_name" => "recenzeController.class.php",
-        "class_name" => "recenzeController",
+        "file_name" => "spravaClankuController.class.php",
+        "class_name" => "spravaClankuController",
+    ),
+
+    "domaci" => array(
+        "title" => "Zveřejněné články",
+
+        //// kontroler
+        "file_name" => "domaciController.class.php",
+        "class_name" => "domaciController",
+    ),
+    "dotazy" => array(
+        "title" => "Dotazy",
+
+        //// kontroler
+        "file_name" => "dotazyController.class.php",
+        "class_name" => "dotazyController",
     ),
     //// KONEC: Sprava uzivatelu ////
 );

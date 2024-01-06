@@ -31,6 +31,16 @@ class OsobniUdajeController implements IController {
         // nazev
         $tplData['title'] = $pageTitle;
 
+        $tplData['clanky'] = $this->db->getAllClanky();
+        $tplData['uzivatele'] = $this->db->getAllUsers();
+
+        //otestovani jesli mame dotaz
+        if(isset($_POST['odeslano'])){
+            if ( (isset($_POST["email"]) && $_POST["email"] != "") && (isset($_POST["jmeno"]) && $_POST["jmeno"] != "") && (isset($_POST["dotaz"]) && $_POST["dotaz"] != "")) {
+                $this->db->addNewDotaz($_POST['email'], $_POST['jmeno'], $_POST['dotaz']);
+            }
+        }
+
         // zpracovani odeslanych formularu na prihlaseni - mam akci?
         if(isset($_POST["action"])) {
             // mam pozadavek na login ?

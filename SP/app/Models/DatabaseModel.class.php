@@ -93,10 +93,6 @@ class DatabaseModel{
         if($obj == null){
             return [];
         }
-        // projdu jednotlive ziskane radky tabulky
-        /*while($row = $vystup->fetch(PDO::FETCH_ASSOC)){
-            $pole[] = $row['login'].'<br>';
-        }*/
         // prevedu vsechny ziskane radky tabulky na pole
         return $obj->fetchAll();
     }
@@ -372,6 +368,21 @@ class DatabaseModel{
         }
     }
 
+    public function getClanekById(int $id){
+        // ziskam pravo dle ID
+        $clanek = $this->selectFromTable(TABLE_CLANEK, "idCLANEK=$id");
+        if(empty($clanek)){
+            return null;
+        } else {
+            // vracim prvni nalezene pravo
+            return $clanek[0];
+        }
+    }
+
+    public function getAllRecenzujiciClanky($clanky, $recenzenti){
+
+    }
+
     /**
      * Vytvoreni noveho uzivatele v databazi.
      *
@@ -530,6 +541,69 @@ class DatabaseModel{
         // provedu update
         return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
     }
+    public function updateClanekNazev(string $nazev,int $idClanku){
+        var_dump($idClanku);
+        $updateStatementWithValues = "nazev='$nazev'";
+        $whereStatement = "idCLANEK=$idClanku";
+        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+    }
+
+    public function updateClanekAbstrakt(string $abstrakt,string $idClanku){
+        $updateStatementWithValues = "abstrakt='$abstrakt'";
+        $whereStatement = "idCLANEK=$idClanku";
+        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+    }
+
+    public function updateClanekSoubor(string $cesta,int $idClanku){
+        $updateStatementWithValues = "cesta='$cesta'";
+        $whereStatement = "idCLANEK=$idClanku";
+        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+    }
+   public function updateClanekSchvalen($idClanku, $stav){
+       $updateStatementWithValues = "schvalen=$stav";
+       $whereStatement = "idCLANEK=$idClanku";
+       return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+   }
+
+   public function updateClanekRecenzent($clanek, $recenzentId, $poradiRecenzenta, $komentar, $hodnoceni){
+       $this->updateHodnoceni($clanek,$clanek[$poradiRecenzenta],$hodnoceni);
+       $this->updateKomentare($clanek,$clanek[$poradiRecenzenta],$komentar);
+       $updateStatementWithValues = "$poradiRecenzenta=$recenzentId";
+       $idClanku = $clanek['idCLANEK'];
+       $whereStatement = "idCLANEK=$idClanku";
+       return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+   }
+
+    public function updateHodnoceni($clanek, $idUziv, $hodnoceni ){
+        $idClanku = $clanek['idCLANEK'];
+        $whereStatement = "idCLANEK=$idClanku";
+        if($clanek['recenzent_1'] == $idUziv){
+             $updateStatementWithValues = "hodnoceni_1=$hodnoceni";
+            return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+        }elseif($clanek['recenzent_2'] == $idUziv){
+             $updateStatementWithValues = "hodnoceni_2=$hodnoceni";
+            return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+        }else if($clanek['recenzent_3'] == $idUziv){
+             $updateStatementWithValues = "hodnoceni_3=$hodnoceni";
+            return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+        }else{
+            return null;
+        }
+    }
+
+    public function updateKomentare($clanek, $idUziv, $hodnoceni ){
+        $idClanku = $clanek['idCLANEK'];
+        $whereStatement = "idCLANEK=$idClanku";
+        if($clanek['recenzent_1'] == $idUziv){
+            $updateStatementWithValues = "komentar_1=('$hodnoceni')";
+        }elseif($clanek['recenzent_2'] == $idUziv){
+            $updateStatementWithValues = "komentar_2=('$hodnoceni')";
+        }else{
+            $updateStatementWithValues = "komentar_3=('$hodnoceni')";
+        }
+        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+    }
+
     ///////////////////  KONEC: Konkretni funkce  ////////////////////////////////////////////
 
     ///////////////////  Sprava prihlaseni uzivatele  ////////////////////////////////////////
@@ -673,6 +747,12 @@ class DatabaseModel{
         return $this->insertIntoTable(TABLE_CLANKY_AUTORA, $insertStatement, $insertValues);
     }
 
+    public function addNewDotaz($email, $jmeno, $dotaz){
+        $insertStatement = "e_mail, jmeno, dotaz";
+        $insertValues = "'$email', '$jmeno', '$dotaz'";
+        return $this->insertIntoTable(TABLE_DOTAZ, $insertStatement, $insertValues);
+    }
+
     /**
      * Metoda vrati pocet autoru
      * @param $uzivatele
@@ -686,6 +766,39 @@ class DatabaseModel{
             }
         }
         return $pocet;
+    }
+
+    public function odstranClanek($idClanku){
+        //pretypovat na int mozna
+        $this->odstranClanekAutor($idClanku);
+        $where = 'idCLANEK = '.$idClanku;
+        $this->deleteFromTable(TABLE_CLANEK, $where);
+    }
+
+    public function odstranClanekAutor($idClanku){
+        $where = 'idCLANEK ='.$idClanku;
+        /*$clanekAutoru = $this->selectFromTable(TABLE_CLANKY_AUTORA, $where,"");
+        foreach ($clanekAutoru as $cA){
+            //$u = $this->getUserById($cA['id_uzivatel']);
+            //
+            $this->updateUserClanek(null,$cA['id_uzivatel']);
+        }*/
+        $this->deleteFromTable(TABLE_CLANKY_AUTORA, $where);
+    }
+
+    /**
+     * vrati vsechny recenzenty
+     * @return array
+     */
+    public function vyberRecenzenty(){
+        $users = $this->getAllUsers();
+        $uzivatele = [];
+        foreach ($users as $u){
+            if($u['id_pravo'] == 3){
+                $uzivatele[] = $u;
+            }
+        }
+        return $uzivatele;
     }
     ///////////////////  KONEC: Sprava prihlaseni uzivatele  ////////////////////////////////////////
 
