@@ -5,12 +5,13 @@
  */
 class DatabaseModel{
     /** @var PDO $pdo  PDO objekt pro praci s databazi. */
-    private $pdo;
+    private PDO $pdo;
 
     /** @var MySession $mySession  Vlastni objekt pro spravu session. */
-    private $mySession;
+    private MySession $mySession;
+
     /** @var string $userSessionKey  Klic pro data uzivatele, ktera jsou ulozena v session. */
-    private $userSessionKey = "current_user_id";
+    private string $userSessionKey = "current_user_id";
 
     /**
      * MyDatabase constructor.
@@ -32,48 +33,6 @@ class DatabaseModel{
         $this->mySession = new MySession();
     }
     ///////////////////  Obecne funkce  ////////////////////////////////////////////
-
-    /**
-     *  Provede dotaz a bud vrati ziskana data, nebo pri chybe ji vypise a vrati null.
-     *  Varianta, pokud NENI pouzit PDO::ERRMODE_EXCEPTION
-     *
-     *  @param string $dotaz        SQL dotaz.
-     *  @return PDOStatement|null    Vysledek dotazu.
-     */
-    private function executeQueryWithoutException(string $dotaz){
-        // vykonam dotaz
-        $res = $this->pdo->query($dotaz);
-        // pokud neni false, tak vratim vysledek, jinak null
-        if ($res != false) {
-            // neni false
-            return $res;
-        } else {
-            // je false - vypisu prislusnou chybu a vratim null
-            $error = $this->pdo->errorInfo();
-            echo $error[2];
-            return null;
-        }
-    }
-
-    /**
-     *  Provede dotaz a bud vrati ziskana data, nebo pri chybe ji vypise a vrati null.
-     *  Varianta, pokud je pouzit PDO::ERRMODE_EXCEPTION
-     *
-     *  @param string $dotaz        SQL dotaz.
-     *  @return PDOStatement|null    Vysledek dotazu.
-     */
-    private function executeQuery(string $dotaz){
-        // vykonam dotaz
-        try {
-            $res = $this->pdo->query($dotaz);
-            return $res;
-        } catch (PDOException $ex){
-            echo "Nastala výjimka: ". $ex->getCode() ."<br>"
-                ."Text: ". $ex->getMessage();
-            return null;
-        }
-    }
-
     /**
      * Jednoduche cteni z prislusne DB tabulky.
      *
@@ -82,19 +41,42 @@ class DatabaseModel{
      * @param string $orderByStatement  Pripadne razeni ziskanych radek tabulky. Default "".
      * @return array                    Vraci pole ziskanych radek tabulky.
      */
-    public function selectFromTable(string $tableName, string $whereStatement = "", string $orderByStatement = ""):array {
+    public function selectFromTable(string $tableName, string $whereStatement, string $orderByStatement, array $poleKlicu, array $poleHodnot):array {
+        $tableName = htmlspecialchars($tableName);
+        $whereStatement = htmlspecialchars($whereStatement);
+        $orderByStatement = htmlspecialchars($orderByStatement);
+
+        $poleHodnot = array_map('htmlspecialchars', $poleHodnot);
+        $poleKlicu = array_map('htmlspecialchars', $poleKlicu);
+
         // slozim dotaz
         $q = "SELECT * FROM ".$tableName
             .(($whereStatement == "") ? "" : " WHERE $whereStatement")
             .(($orderByStatement == "") ? "" : " ORDER BY $orderByStatement");
-        // provedu ho a vratim vysledek
-        $obj = $this->executeQuery($q);
-        // pokud je null, tak vratim prazdne pole
-        if($obj == null){
+
+        $vystup = $this->pdo->prepare($q);
+
+
+        if($poleKlicu != [] && $poleHodnot != []){
+            //projdeme pres vsechny hodnoty podle kterych mame urcenou podminku kde
+            for ($i = 0; $i < count($poleHodnot); $i++){
+                //pripravime klic
+                $klic = $poleKlicu[$i];
+                //pripravime hodnotu
+                $hodnota = $poleHodnot[$i];
+                //nabindujeme klic s hodnotou
+                $vystup->bindValue($klic,$hodnota);
+            }
+       }
+
+
+        if($vystup->execute()){
+            //dotaz probehl v poradku
+            //vsechny radky do pole a vratime
+            return $vystup->fetchAll();
+        }else{
             return [];
         }
-        // prevedu vsechny ziskane radky tabulky na pole
-        return $obj->fetchAll();
     }
 
     /**
@@ -105,13 +87,33 @@ class DatabaseModel{
      * @param string $insertValues      Text s hodnotami pro prislusne sloupce.
      * @return bool                     Vlozeno v poradku?
      */
-    public function insertIntoTable(string $tableName, string $insertStatement, string $insertValues):bool {
+    public function insertIntoTable(string $tableName, string $insertStatement, string $insertValues, array $poleKlicu, array $poleHodnot):bool {
+
         // slozim dotaz
         $q = "INSERT INTO $tableName($insertStatement) VALUES ($insertValues)";
-        // provedu ho a vratim uspesnost vlozeni
+        $vystup = $this->pdo->prepare($q);
+
+        if($poleKlicu != [] && $poleHodnot != []){
+            //projdeme pres vsechny hodnoty podle kterych mame urcenou podminku kde
+            for ($i = 0; $i < count($poleHodnot); $i++){
+                //pripravime klic
+                $klic = $poleKlicu[$i];
+                //pripravime hodnotu
+                $hodnota = $poleHodnot[$i];
+                //nabindujeme klic s hodnotou
+                $vystup->bindValue($klic,$hodnota);
+            }
+        }
+
+        if($vystup->execute()){
+            return true;
+        }else{
+            return false;
+        }
+        /*// provedu ho a vratim uspesnost vlozeni
         $obj = $this->executeQuery($q);
         // pokud ($obj == null), tak vratim false
-        return ($obj != null);
+        return ($obj != null);*/
     }
 
     /**
@@ -122,13 +124,36 @@ class DatabaseModel{
      * @param string $whereStatement                Cela cast pro WHERE.
      * @return bool                                 Upraveno v poradku?
      */
-    public function updateInTable(string $tableName, string $updateStatementWithValues, string $whereStatement):bool {
+    public function updateInTable(string $tableName, string $updateStatementWithValues, string $whereStatement, $poleKlicu, $poleHodnot):bool {
+        $poleHodnot = array_map('htmlspecialchars', $poleHodnot);
+        $poleKlicu = array_map('htmlspecialchars', $poleKlicu);
+
         // slozim dotaz
         $q = "UPDATE $tableName SET $updateStatementWithValues WHERE $whereStatement";
-        // provedu ho a vratim vysledek
-        $obj = $this->executeQuery($q);
-        // pokud ($obj == null), tak vratim false
-        return ($obj != null);
+
+        $vystup = $this->pdo->prepare($q);
+
+
+        if($poleKlicu != [] && $poleHodnot != []){
+            //projdeme pres vsechny hodnoty podle kterych mame urcenou podminku kde
+            for ($i = 0; $i < count($poleHodnot); $i++){
+                //pripravime klic
+                $klic = $poleKlicu[$i];
+                //pripravime hodnotu
+                $hodnota = $poleHodnot[$i];
+                //nabindujeme klic s hodnotou
+                $vystup->bindValue($klic,$hodnota);
+            }
+        }
+
+
+        if($vystup->execute()){
+            //dotaz probehl v poradku
+            //vsechny radky do pole a vratime
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /**
@@ -138,13 +163,37 @@ class DatabaseModel{
      * @param string $whereStatement    Podminka mazani.
      * @return bool
      */
-    public function deleteFromTable(string $tableName, string $whereStatement):bool {
+    public function deleteFromTable(string $tableName, string $whereStatement, array $poleKlicu, array $poleHodnot):bool {
+        $poleHodnot = array_map('htmlspecialchars', $poleHodnot);
+        $poleKlicu = array_map('htmlspecialchars', $poleKlicu);
+
         // slozim dotaz
         $q = "DELETE FROM $tableName WHERE $whereStatement";
-        // provedu ho a vratim vysledek
-        $obj = $this->executeQuery($q);
-        // pokud ($obj == null), tak vratim false
-        return ($obj != null);
+
+        $vystup = $this->pdo->prepare($q);
+
+
+        if($poleKlicu != [] && $poleHodnot != []){
+            //projdeme pres vsechny hodnoty podle kterych mame urcenou podminku kde
+            for ($i = 0; $i < count($poleHodnot); $i++){
+                //pripravime klic
+                $klic = $poleKlicu[$i];
+                //pripravime hodnotu
+                $hodnota = $poleHodnot[$i];
+                //nabindujeme klic s hodnotou
+                $vystup->bindValue($klic,$hodnota);
+            }
+        }
+
+
+        if($vystup->execute()){
+            //dotaz probehl v poradku
+            //vsechny radky do pole a vratime
+            return true;
+        }else{
+            return false;
+        }
+
     }
 
     ///////////////////  KONEC: Obecne funkce  ////////////////////////////////////////////
@@ -156,10 +205,10 @@ class DatabaseModel{
      *
      * @return array    Pole se vsemi uzivateli.
      */
-    public function getAllUsers(){
+    public function getAllUsers(): array
+    {
         // ziskam vsechny uzivatele z DB razene dle ID a vratim je
-        $users = $this->selectFromTable(TABLE_UZIVATEL, "", "id_uzivatel");
-        return $users;
+        return $this->selectFromTable(TABLE_UZIVATEL, "", "id_uzivatel", [], []);
     }
 
     /**
@@ -167,20 +216,19 @@ class DatabaseModel{
      *
      * @return array    Pole se vsemi pravy.
      */
-    public function getAllRights(){
+    public function getAllRights(): array {
         // ziskam vsechna prava z DB razena dle ID a vratim je
-        $rights = $this->selectFromTable(TABLE_PRAVO, "", "vaha ASC, nazev ASC");
-        return $rights;
+        return $this->selectFromTable(TABLE_PRAVO, "", "vaha ASC, nazev ASC", [], []);
     }
 
     /**
      * Ziskani zaznamu vsech clanku aplikace.
      *
-     * @return array    Pole se vsemi uzivateli.
+     * @return ?array    Pole se vsemi uzivateli.
      */
-    public function getAllClanky(){
+    public function getAllClanky(): ?array {
         // ziskam vsechny uzivatele z DB razene dle ID a vratim je
-        $clanky = $this->selectFromTable(TABLE_CLANEK, "", "idCLANEK");
+        $clanky = $this->selectFromTable(TABLE_CLANEK, "", "idCLANEK", [],[]);
         if($clanky != null){
             return $clanky;
         }else{
@@ -188,9 +236,19 @@ class DatabaseModel{
         }
     }
 
-    public function getAllClankyAutoru(){
+    public function getAllDotazy(): ?array {
         // ziskam vsechny uzivatele z DB razene dle ID a vratim je
-        $clanky = $this->selectFromTable(TABLE_CLANKY_AUTORA, "", "idClankyAutora");
+        $dotazy = $this->selectFromTable(TABLE_DOTAZ, "", "id_dotaz",[],[]);
+        if($dotazy != null){
+            return $dotazy;
+        }else{
+            return null;
+        }
+    }
+
+    public function getAllClankyAutoru(): ?array {
+        // ziskam vsechny uzivatele z DB razene dle ID a vratim je
+        $clanky = $this->selectFromTable(TABLE_CLANKY_AUTORA, "", "idClankyAutora",[],[]);
         if($clanky != null){
             return $clanky;
         }else{
@@ -201,14 +259,24 @@ class DatabaseModel{
     /**
      * Ziskani zaznamu vsech id clanku aplikace uzivatele.
      *
-     * @return array    Pole se vsemi uzivateli.
+     * @return ?array    Pole se vsemi uzivateli.
      */
-    public function getAllAutoroviClankyID($uzivatelID, $clankyAutoru){
+    public function getAllAutoroviClankyID($uzivatelID, $clankyAutoru): ?array {
         // ziskam vsechny uzivatele z DB razene dle ID a vratim je
+        $uzivatelID = htmlspecialchars($uzivatelID);
+        foreach ($clankyAutoru as $clanek) {
+            // Projděte každý článek a escapujte hodnoty
+            foreach ($clanek as $hodnota) {
+                if($hodnota != null) {
+                    $hodnota = htmlspecialchars($hodnota);
+                }
+            }
+        }
 
         $IDclankuUzivatele = [];
         if($clankyAutoru != null){
             foreach ($clankyAutoru as $cA){
+
                 //pokud uzivatel clanek vytvoril
                 if($cA['id_uzivatel'] == $uzivatelID){
                     //priradime id clanku do pole
@@ -230,16 +298,29 @@ class DatabaseModel{
     /**
      * Ziskani zaznamu vsech clanku aplikace uzivatele.
      *
-     * @return array    Pole se vsemi uzivateli.
+     * @return ?array    Pole se vsemi uzivateli.
      */
-    public function getAllAutoroviClanky($IDclankuUzivatele, $clanky){
+    public function getAllAutoroviClanky($IDclankuUzivatele, $clanky): ?array {
+        if($IDclankuUzivatele != null){
+            $IDclankuUzivatele = array_map('htmlspecialchars', $IDclankuUzivatele);
+        }
+
+        foreach ($clanky as $clanek) {
+            // Projděte každý článek a escapujte hodnoty
+            foreach ($clanek as $hodnota) {
+                if($hodnota != null){
+                    $hodnota = htmlspecialchars($hodnota);
+                }
+            }
+        }
+
         $autoroviClanky = [];
         //jdeme postupne pres vsechny ID clanku ktere uzivatel vytvoril
         if($clanky != null && $IDclankuUzivatele != null){
             foreach ($IDclankuUzivatele as $idClanku){
                 // a jdeme pres clanky
                 foreach ($clanky as $c){
-                    //var_dump($c);
+
                     //pokud se id clanku rovnaji pak clanek priradime do pole
                     if($idClanku == $c['idCLANEK']){
                         $autoroviClanky[] = $c;
@@ -258,9 +339,10 @@ class DatabaseModel{
      * Metoda vrati id uzivatelu kteří clanky vytvareli
      * @param $IDclankuAutora
      * @param $clankyAutoru
-     * @return array|mixed
+     * @return ?array
      */
-    public function getAllUzivIdClanku($IDclankuAutora, $clankyAutoru){
+    public function getAllUzivIdClanku($IDclankuAutora, $clankyAutoru): ?array
+    {
         $idUzivatelu = [];
         $autoriVClanku = [];
         if($IDclankuAutora != null && $clankyAutoru != null){
@@ -279,8 +361,7 @@ class DatabaseModel{
                 $idUzivatelu = null;
             }
         }
-        //var_dump($idUzivatelu);
-        //var_dump($autoriVClanku);
+
         if($autoriVClanku != null){
             return $autoriVClanku;
         }else{
@@ -290,11 +371,31 @@ class DatabaseModel{
 
     /**
      * Metoda vrati jmena uzivatelu kteri clanky vytvareli
-     * @param $IDAutoru
+     * @param $IDAutoruClanku
      * @param $uzivatele
-     * @return array|mixed
+     * @return ?array
      */
-    public function getAllUzivClanku($IDAutoruClanku, $uzivatele){
+    public function getAllUzivClanku($IDAutoruClanku, $uzivatele): ?array {
+        if($IDAutoruClanku != null){
+            foreach ($IDAutoruClanku as $autori) {
+                // Projděte každý článek a escapujte hodnoty
+                foreach ($autori as $hodnota) {
+                    if($hodnota != null){
+                        $hodnota = htmlspecialchars($hodnota);
+                    }
+                }
+            }
+        }
+
+        foreach ($uzivatele as $u) {
+            // Projděte každý článek a escapujte hodnoty
+            foreach ($u as $hodnota) {
+                if($hodnota != null){
+                    $hodnota = htmlspecialchars($hodnota);
+                }
+            }
+        }
+
         $jmenaUziv = [];
         $poleAutoruClanku = [];
         if($IDAutoruClanku != null){
@@ -302,7 +403,7 @@ class DatabaseModel{
             foreach ($IDAutoruClanku as $idAC){
                 ///jdeme pres vsechny id uzivatelu konkretniho clanku
                 foreach ($idAC as $idU){
-                    //var_dump($idU);
+
                     //jedeme pres vsechny clankyAutoru
                     foreach ($uzivatele as $u){
                         //pokud se id autora clanku shoduje s id uzivatele
@@ -338,11 +439,16 @@ class DatabaseModel{
      * Ziskani konkretniho prava uzivatele dle ID prava.
      *
      * @param int $id       ID prava.
-     * @return array        Data nalezeneho prava.
+     * @return ?array        Data nalezeneho prava.
      */
-    public function getRightById(int $id){
+    public function getRightById(int $id): ?array {
+        $id = htmlspecialchars($id);
+        $poleHodnot[0] = $id;
+        $poleKlicu[0] = ':uIdPravo';
+
         // ziskam pravo dle ID
-        $rights = $this->selectFromTable(TABLE_PRAVO, "id_pravo=$id");
+        $rights = $this->selectFromTable(TABLE_PRAVO, "id_pravo=:uIdPravo", "", $poleKlicu, $poleHodnot);
+
         if(empty($rights)){
             return null;
         } else {
@@ -355,11 +461,15 @@ class DatabaseModel{
      * Ziskani konkretniho prava uzivatele dle ID uzivatele.
      *
      * @param int $id       ID prava.
-     * @return array        Data nalezeneho uzivatele.
+     * @return ?array        Data nalezeneho uzivatele.
      */
-    public function getUserById(int $id){
+    public function getUserById(int $id): ?array {
+        $id = htmlspecialchars($id);
+        $poleKlicu[0] = ':kIdUzivatel';
+        $poleHodnot[0] = $id;
+
         // ziskam pravo dle ID
-        $users = $this->selectFromTable(TABLE_UZIVATEL, "id_uzivatel=$id");
+        $users = $this->selectFromTable(TABLE_UZIVATEL, "id_uzivatel=:kIdUzivatel", "", $poleKlicu, $poleHodnot);
         if(empty($users)){
             return null;
         } else {
@@ -369,8 +479,11 @@ class DatabaseModel{
     }
 
     public function getClanekById(int $id){
+        $id = htmlspecialchars($id);
+        $poleHodnot[0]=$id;
+        $poleKlicu[0] = ':kIdClanek';
         // ziskam pravo dle ID
-        $clanek = $this->selectFromTable(TABLE_CLANEK, "idCLANEK=$id");
+        $clanek = $this->selectFromTable(TABLE_CLANEK, "idCLANEK=:kIdClanek", "", $poleKlicu, $poleHodnot);
         if(empty($clanek)){
             return null;
         } else {
@@ -379,49 +492,49 @@ class DatabaseModel{
         }
     }
 
-    public function getAllRecenzujiciClanky($clanky, $recenzenti){
-
-    }
-
     /**
      * Vytvoreni noveho uzivatele v databazi.
      *
      * @param string $login     Login.
      * @param string $jmeno     Jmeno.
      * @param string $email     E-mail.
-     * @param int $idPravo      Je cizim klicem do tabulky s pravy.
      * @return bool             Vlozen v poradku?
      */
-    public function addNewUser(string $login, string $heslo, string $jmeno, string $email, int $idPravo, string $pohlavi, string $datum){
+    public function addNewUser(string $login, string $heslo, string $jmeno, string $email, string $pohlavi, string $datum): bool {
+        $login = htmlspecialchars($login);
+        $heslo = htmlspecialchars($heslo);
+        $jmeno = htmlspecialchars($jmeno);
+        $email = htmlspecialchars($email);
+        $pohlavi = htmlspecialchars($pohlavi);
+        $datum = htmlspecialchars($datum);
         $idPravo = 4;
         $zablokovany = 0;
+
+        $poleHodnot[0]=$idPravo;
+        $poleKlicu[0]= ':pravo';
+        $poleHodnot[1]=$jmeno;
+        $poleKlicu[1]= ':jmeno';
+        $poleHodnot[2]=$login;
+        $poleKlicu[2]= ':login';
+        $poleHodnot[3]=$heslo;
+        $poleKlicu[3]= ':heslo';
+        $poleHodnot[4]=$email;
+        $poleKlicu[4]= ':email';
+        $poleHodnot[5]=$pohlavi;
+        $poleKlicu[5]= ':pohlavi';
+        $poleHodnot[6]=$datum;
+        $poleKlicu[6]= ':datum';
+        $poleHodnot[7]=$zablokovany;
+        $poleKlicu[7]= ':zablokovany';
+
+
         // hlavicka pro vlozeni do tabulky uzivatelu
         $insertStatement = "id_pravo, jmeno_prijmeni, username, password, email, pohlavi, datum_narozeni, Zablokovany";
         // hodnoty pro vlozeni do tabulky uzivatelu
         //$insertValues = "'$login', '$heslo', '$jmeno', '$email', $idPravo";
-        $insertValues = "'$idPravo', '$jmeno', '$login', '$heslo', '$email', '$pohlavi', '$datum', '$zablokovany'";
+        $insertValues = ":pravo, :jmeno, :login, :heslo, :email, :pohlavi, :datum, :zablokovany";
         // provedu dotaz a vratim jeho vysledek
-        return $this->insertIntoTable(TABLE_UZIVATEL, $insertStatement, $insertValues);
-    }
-
-    /**
-     * Uprava konkretniho uzivatele v databazi.
-     *
-     * @param int $idUzivatel   ID upravovaneho uzivatele.
-     * @param string $login     Login.
-     * @param string $heslo     Heslo.
-     * @param string $jmeno     Jmeno.
-     * @param string $email     E-mail.
-     * @param int $idPravo      ID prava.
-     * @return bool             Bylo upraveno?
-     */
-    public function updateUser(int $idUzivatel, string $login, string $heslo, string $jmeno, string $email, int $idPravo){
-        // slozim cast s hodnotami
-        $updateStatementWithValues = "login='$login', heslo='$heslo', jmeno='$jmeno', email='$email', id_pravo='$idPravo'";
-        // podminka
-        $whereStatement = "id_uzivatel=$idUzivatel";
-        // provedu update
-        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+        return $this->insertIntoTable(TABLE_UZIVATEL, $insertStatement, $insertValues, $poleKlicu, $poleHodnot);
     }
 
     /**
@@ -429,13 +542,20 @@ class DatabaseModel{
      * @param int $idUzivatel   ID upravovaneho uzivatele.
      * @return bool             Bylo upraveno?
      */
-    public function updateUserEmail(int $idUzivatel,  string $email){
+    public function updateUserEmail(int $idUzivatel,  string $email): bool {
+        $idUzivatel = htmlspecialchars($idUzivatel);
+        $email = htmlspecialchars($email);
         // slozim cast s hodnotami
-        $updateStatementWithValues = " email='$email'";
+        $updateStatementWithValues = " email=:kEmail";
+        $poleKlicu[0] = ':kEmail';
+        $poleHodnot[0] = $email;
         // podminka
-        $whereStatement = "id_uzivatel=$idUzivatel";
+        $whereStatement = "id_uzivatel=:kIdUzivatel";
+        $poleKlicu[1] = ':kIdUzivatel';
+        $poleHodnot[1] = $idUzivatel;
+
         // provedu update
-        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
 
     /**
@@ -445,13 +565,19 @@ class DatabaseModel{
      * @param string $login     Login.
      * @return bool             Bylo upraveno?
      */
-    public function updateUsername(int $idUzivatel, string $login){
+    public function updateUsername(int $idUzivatel, string $login): bool{
+        $idUzivatel = htmlspecialchars($idUzivatel);
+        $login = htmlspecialchars($login);
         // slozim cast s hodnotami
-        $updateStatementWithValues = " username='$login'";
+        $updateStatementWithValues = " username=:kLogin";
+        $poleKlicu[0] = ':kLogin';
+        $poleHodnot[0] = $login;
         // podminka
-        $whereStatement = "id_uzivatel=$idUzivatel";
+        $whereStatement = "id_uzivatel=:kIdUzivatel";
+        $poleKlicu[1] = ':kIdUzivatel';
+        $poleHodnot[1] = $idUzivatel;
         // provedu update
-        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
 
     /**
@@ -460,13 +586,19 @@ class DatabaseModel{
      * @param int $idUzivatel   ID upravovaneho uzivatele.
      * @return bool             Bylo upraveno?
      */
-    public function updateUserJmeno(int $idUzivatel, string $jmeno){
+    public function updateUserJmeno(int $idUzivatel, string $jmeno): bool{
+        $idUzivatel = htmlspecialchars($idUzivatel);
+        $jmeno = htmlspecialchars($jmeno);
         // slozim cast s hodnotami
-        $updateStatementWithValues = " jmeno_prijmeni='$jmeno'";
+        $updateStatementWithValues = " jmeno_prijmeni=:kJmenol";
+        $poleKlicu[0] = ':kJmenol';
+        $poleHodnot[0] = $jmeno;
         // podminka
-        $whereStatement = "id_uzivatel=$idUzivatel";
+        $whereStatement = "id_uzivatel=:kIdUzivatel";
+        $poleKlicu[1] = ':kIdUzivatel';
+        $poleHodnot[1] = $idUzivatel;
         // provedu update
-        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
 
     /**
@@ -476,15 +608,21 @@ class DatabaseModel{
      * @param string $heslo     Heslo.
      * @return bool             Bylo upraveno?
      */
-    public function updateUserPass(int $idUzivatel, string $heslo){
-        //zahashovani hesla
+    public function updateUserPass(int $idUzivatel, string $heslo): bool{
+        $idUzivatel = htmlspecialchars($idUzivatel);
+        $heslo = htmlspecialchars($heslo);
+        ///zahashovani hesla
         $hash = password_hash($heslo, PASSWORD_BCRYPT);
         // slozim cast s hodnotami
-        $updateStatementWithValues = "password='$hash'";
+        $updateStatementWithValues = "password=:kHash";
+        $poleKlicu[0] = ':kHash';
+        $poleHodnot[0] = $hash;
         // podminka
-        $whereStatement = "id_uzivatel=$idUzivatel";
+        $whereStatement = "id_uzivatel=:kIdUzivatel";
+        $poleKlicu[1] = ':kIdUzivatel';
+        $poleHodnot[1] = $idUzivatel;
         // provedu update
-        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
     /**
      * Uprava konkretniho uzivatele v databazi.
@@ -493,12 +631,18 @@ class DatabaseModel{
      * @param int $idPravo      ID prava.
      * @return bool             Bylo upraveno?
      */
-    public function updateUserRight(int $idUzivatel, int $idPravo){
-        $updateStatementWithValues = "id_pravo='$idPravo'";
+    public function updateUserRight(int $idUzivatel, int $idPravo): bool {
+        $idUzivatel = htmlspecialchars($idUzivatel);
+        $idPravo = htmlspecialchars($idPravo);
+        $updateStatementWithValues = "id_pravo=:kIdPravo";
+        $poleKlicu[0] = ':kIdPravo';
+        $poleHodnot[0] = $idPravo;
         // podminka
-        $whereStatement = "id_uzivatel=$idUzivatel";
+        $whereStatement = "id_uzivatel=:kIdUzivatel";
+        $poleKlicu[1] = ':kIdUzivatel';
+        $poleHodnot[1] = $idUzivatel;
         // provedu update
-        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
 
     /**
@@ -507,12 +651,18 @@ class DatabaseModel{
      * @param int $idUzivatel   ID upravovaneho uzivatele.
      * @return bool             Bylo upraveno?
      */
-    public function updateUserGender(int $idUzivatel, string $pohlavi){
-        $updateStatementWithValues = "pohlavi='$pohlavi'";
+    public function updateUserGender(int $idUzivatel, string $pohlavi): bool{
+        $idUzivatel = htmlspecialchars($idUzivatel);
+        $pohlavi = htmlspecialchars($pohlavi);
+        $updateStatementWithValues = "pohlavi=:kPohlavi";
+        $poleKlicu[0] = ':kPohlavi';
+        $poleHodnot[0] = $pohlavi;
         // podminka
-        $whereStatement = "id_uzivatel=$idUzivatel";
+        $whereStatement = "id_uzivatel=:kIdUzivatel";
+        $poleKlicu[1] = ':kIdUzivatel';
+        $poleHodnot[1] = $idUzivatel;
         // provedu update
-        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
 
     /**
@@ -521,12 +671,18 @@ class DatabaseModel{
      * @param int $idUzivatel   ID upravovaneho uzivatele.
      * @return bool             Bylo upraveno?
      */
-    public function updateUserDate(int $idUzivatel, string $date){
-        $updateStatementWithValues = "datum_narozeni='$date'";
+    public function updateUserDate(int $idUzivatel, string $date): bool {
+        $idUzivatel = htmlspecialchars($idUzivatel);
+        $date = htmlspecialchars($date);
+        $updateStatementWithValues = "datum_narozeni=:kDatum";
+        $poleKlicu[0] = ':kDatum';
+        $poleHodnot[0] = $date;
         // podminka
-        $whereStatement = "id_uzivatel=$idUzivatel";
+        $whereStatement = "id_uzivatel=:kIdUzivatel";
+        $poleKlicu[1] = ':kIdUzivatel';
+        $poleHodnot[1] = $idUzivatel;
         // provedu update
-        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
     /**
      * Uprava konkretniho uzivatele v databazi.
@@ -534,74 +690,148 @@ class DatabaseModel{
      * @param int $idUzivatel   ID upravovaneho uzivatele.
      * @return bool             Bylo upraveno?
      */
-    public function updateZablokovaniUzivatele(int $idUzivatel, int $povol){
-        $updateStatementWithValues = "Zablokovany='$povol'";
+    public function updateZablokovaniUzivatele(int $idUzivatel, int $povol): bool {
+        $idUzivatel = htmlspecialchars($idUzivatel);
+        $povol = htmlspecialchars($povol);
+        $updateStatementWithValues = "Zablokovany=:kZablokovany";
+        $poleKlicu[0] = ':kZablokovany';
+        $poleHodnot[0] = $povol;
         // podminka
-        $whereStatement = "id_uzivatel=$idUzivatel";
+        $whereStatement = "id_uzivatel=:kIdUzivatel";
+        $poleKlicu[1] = ':kIdUzivatel';
+        $poleHodnot[1] = $idUzivatel;
         // provedu update
-        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement);
+        return $this->updateInTable(TABLE_UZIVATEL, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
-    public function updateClanekNazev(string $nazev,int $idClanku){
-        var_dump($idClanku);
-        $updateStatementWithValues = "nazev='$nazev'";
-        $whereStatement = "idCLANEK=$idClanku";
-        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+    public function updateClanekNazev(string $nazev,int $idClanku): bool {
+        $nazev = htmlspecialchars($nazev);
+        $idClanku = htmlspecialchars($idClanku);
+        $updateStatementWithValues = "nazev=:kNazev";
+        $poleKlicu[0] = ':kNazev';
+        $poleHodnot[0] = $nazev;
+        $whereStatement = "idCLANEK=:kIdClanku";
+        $poleKlicu[1] = ':kIdClanku';
+        $poleHodnot[1] = $idClanku;
+        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
 
-    public function updateClanekAbstrakt(string $abstrakt,string $idClanku){
-        $updateStatementWithValues = "abstrakt='$abstrakt'";
-        $whereStatement = "idCLANEK=$idClanku";
-        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+    public function updateClanekAbstrakt(string $abstrakt,string $idClanku): bool {
+        $abstrakt = htmlspecialchars($abstrakt);
+        $idClanku = htmlspecialchars($idClanku);
+        $updateStatementWithValues = "abstrakt=:kAbstrakt";
+        $poleKlicu[0] = ':kAbstrakt';
+        $poleHodnot[0] = $abstrakt;
+        $whereStatement = "idCLANEK=:kIdClanku";
+        $poleKlicu[1] = ':kIdClanku';
+        $poleHodnot[1] = $idClanku;
+        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
 
-    public function updateClanekSoubor(string $cesta,int $idClanku){
-        $updateStatementWithValues = "cesta='$cesta'";
-        $whereStatement = "idCLANEK=$idClanku";
-        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+    public function updateClanekSoubor(string $cesta,int $idClanku): bool {
+        $cesta = htmlspecialchars($cesta);
+        $idClanku = htmlspecialchars($idClanku);
+        $updateStatementWithValues = "cesta=:kCesta";
+        $poleKlicu[0] = ':kCesta';
+        $poleHodnot[0] = $cesta;
+        $whereStatement = "idCLANEK=:kIdClanku";
+        $poleKlicu[1] = ':kIdClanku';
+        $poleHodnot[1] = $idClanku;
+
+        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
-   public function updateClanekSchvalen($idClanku, $stav){
-       $updateStatementWithValues = "schvalen=$stav";
-       $whereStatement = "idCLANEK=$idClanku";
-       return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+   public function updateClanekSchvalen($idClanku, $stav): bool {
+       $idClanku = htmlspecialchars($idClanku);
+       $stav = htmlspecialchars($stav);
+       $updateStatementWithValues = "schvalen=:kStav";
+       $poleKlicu[0] = ':kStav';
+       $poleHodnot[0] = $stav;
+       $whereStatement = "idCLANEK=:kIdClanku";
+       $poleKlicu[1] = ':kIdClanku';
+       $poleHodnot[1] = $idClanku;
+       return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
    }
 
-   public function updateClanekRecenzent($clanek, $recenzentId, $poradiRecenzenta, $komentar, $hodnoceni){
+   public function updateClanekRecenzent($clanek, $recenzentId, $poradiRecenzenta, $komentar, $hodnoceni): bool {
+       // Projděte každý článek a escapujte hodnoty
+       foreach ($clanek as $hodnota) {
+           if($hodnota != null){
+               $hodnota = htmlspecialchars($hodnota);
+           }
+       }
+
+       $recenzentId = htmlspecialchars($recenzentId);
+       $poradiRecenzenta = htmlspecialchars($poradiRecenzenta);
+       $komentar = htmlspecialchars($komentar);
+       $hodnoceni = htmlspecialchars($hodnoceni);
+
        $this->updateHodnoceni($clanek,$clanek[$poradiRecenzenta],$hodnoceni);
        $this->updateKomentare($clanek,$clanek[$poradiRecenzenta],$komentar);
-       $updateStatementWithValues = "$poradiRecenzenta=$recenzentId";
+
+       $updateStatementWithValues = "$poradiRecenzenta=:kRid";
+       $poleKlicu[0] = ':kRid';
+       $poleHodnot[0] = $recenzentId;
+
        $idClanku = $clanek['idCLANEK'];
-       $whereStatement = "idCLANEK=$idClanku";
-       return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+       $whereStatement = "idCLANEK=:kIdClanku";
+       $poleKlicu[1] = ':kIdClanku';
+       $poleHodnot[1] = $idClanku;
+
+       return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
    }
 
-    public function updateHodnoceni($clanek, $idUziv, $hodnoceni ){
+    public function updateHodnoceni($clanek, $idUziv, $hodnoceni ): ?bool {
+        $clanek = array_map('htmlspecialchars', $clanek);
+        $idUziv = htmlspecialchars($idUziv);
+        $hodnoceni = htmlspecialchars($hodnoceni);
         $idClanku = $clanek['idCLANEK'];
-        $whereStatement = "idCLANEK=$idClanku";
+        $whereStatement = "idCLANEK=:kIdClanku";
+        $poleKlicu[1] = ':kIdClanku';
+        $poleHodnot[1] = $idClanku;
         if($clanek['recenzent_1'] == $idUziv){
-             $updateStatementWithValues = "hodnoceni_1=$hodnoceni";
-            return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+            $updateStatementWithValues = "hodnoceni_1=:kH";
+            $poleKlicu[0] = ':kH';
+            $poleHodnot[0] = $hodnoceni;
+            return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
         }elseif($clanek['recenzent_2'] == $idUziv){
-             $updateStatementWithValues = "hodnoceni_2=$hodnoceni";
-            return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+            $updateStatementWithValues = "hodnoceni_2=:kH";
+            $poleKlicu[0] = ':kH';
+            $poleHodnot[0] = $hodnoceni;
+            return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
         }else if($clanek['recenzent_3'] == $idUziv){
-             $updateStatementWithValues = "hodnoceni_3=$hodnoceni";
-            return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+            $updateStatementWithValues = "hodnoceni_3=:kH";
+            $poleKlicu[0] = ':kH';
+            $poleHodnot[0] = $hodnoceni;
+            return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
         }else{
             return null;
         }
     }
 
-    public function updateKomentare($clanek, $idUziv, $hodnoceni ){
+    public function updateKomentare($clanek, $idUziv, $hodnoceni ): bool {
+        $clanek = array_map('htmlspecialchars', $clanek);
+        $idUziv = htmlspecialchars($idUziv);
+        $hodnoceni = htmlspecialchars($hodnoceni);
         $idClanku = $clanek['idCLANEK'];
-        $whereStatement = "idCLANEK=$idClanku";
+        $whereStatement = "idCLANEK=:kIdClanku";
+        $poleKlicu[1] = ':kIdClanku';
+        $poleHodnot[1] = $idClanku;
         if($clanek['recenzent_1'] == $idUziv){
-            $updateStatementWithValues = "komentar_1=('$hodnoceni')";
+            $updateStatementWithValues = "komentar_1=:kHo";
+            $poleKlicu[0] = ':kHo';
+            $poleHodnot[0] = $hodnoceni;
+            //('$hodnoceni')
         }elseif($clanek['recenzent_2'] == $idUziv){
-            $updateStatementWithValues = "komentar_2=('$hodnoceni')";
+            $updateStatementWithValues = "komentar_2=:kHo";
+            $poleKlicu[0] = ':kHo';
+            $poleHodnot[0] = $hodnoceni;
+            //('$hodnoceni')
         }else{
-            $updateStatementWithValues = "komentar_3=('$hodnoceni')";
+            $updateStatementWithValues = "komentar_3=:kHo";
+            $poleKlicu[0] = ':kHo';
+            $poleHodnot[0] = $hodnoceni;
+            //('$hodnoceni')
         }
-        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement);
+        return $this->updateInTable(TABLE_CLANEK, $updateStatementWithValues, $whereStatement, $poleKlicu, $poleHodnot);
     }
 
     ///////////////////  KONEC: Konkretni funkce  ////////////////////////////////////////////
@@ -609,16 +839,21 @@ class DatabaseModel{
     ///////////////////  Sprava prihlaseni uzivatele  ////////////////////////////////////////
 
     /**
-     * Overi, zda muse byt uzivatel prihlasen a pripadne ho prihlasi.
+     * Overi, zda muze byt uzivatel prihlasen a pripadne ho prihlasi.
      *
      * @param string $login     Login uzivatele.
      * @param string $heslo     Heslo uzivatele.
      * @return bool             Byl prihlasen?
      */
     public function userLogin(string $login, string $heslo):bool {
+        $login = htmlspecialchars($login);
+        $heslo = htmlspecialchars($heslo);
+
+        $poleHodnot[0] = $login;
+        $poleKlicu[0] = ':kUzivatelLogin';
         // ziskam uzivatele z DB - primo overuju login i heslo
-        $where = "username='$login'";
-        $user = $this->selectFromTable(TABLE_UZIVATEL, $where);
+        $where = "username=:kUzivatelLogin";
+        $user = $this->selectFromTable(TABLE_UZIVATEL, $where,"", $poleKlicu, $poleHodnot);
 
         // ziskal jsem uzivatele
         if(count($user)){
@@ -638,7 +873,7 @@ class DatabaseModel{
     /**
      * Odhlasi soucasneho uzivatele.
      */
-    public function userLogout(){
+    public function userLogout(): void {
         unset($_SESSION[$this->userSessionKey]);
     }
 
@@ -657,7 +892,7 @@ class DatabaseModel{
      *
      * @return mixed|null   Data uzivatele nebo null.
      */
-    public function getLoggedUserData(){
+    public function getLoggedUserData(): mixed {
         if($this->isUserLogged()){
             // ziskam data uzivatele ze session
             $userId = $_SESSION[$this->userSessionKey];
@@ -669,8 +904,10 @@ class DatabaseModel{
                 // vracim null
                 return null;
             }else{
+                $poleHodnot[0] = intval($userId);
+                $poleKlicu[0] = ':kIdUzivatel';
                 // nactu data uzivatele z databaze
-                $userData = $this->selectFromTable(TABLE_UZIVATEL, "id_uzivatel=$userId");
+                $userData = $this->selectFromTable(TABLE_UZIVATEL, "id_uzivatel=:kIdUzivatel", "", $poleKlicu, $poleHodnot);
                 // mam data uzivatele?
                 if(empty($userData)){
                     // nemam - vypisu jen chybu, uzivatele odhlasim a vratim null
@@ -714,7 +951,18 @@ class DatabaseModel{
      * @param $users
      * @return boolean
      */
-    public function jeUsernameVolne($usernameR, $users):bool{
+    public function jeUsernameVolne(string $usernameR, $users):bool{
+        $usernameR = htmlspecialchars($usernameR);
+
+        foreach ($users as $u) {
+            // Projděte každý článek a escapujte hodnoty
+            foreach ($u as $hodnota) {
+                if($hodnota != null){
+                    $hodnota = htmlspecialchars($hodnota);
+                }
+            }
+        }
+
         $volne = true;
         foreach ($users as $u){
             if ($u['username'] == $usernameR){
@@ -726,31 +974,76 @@ class DatabaseModel{
     }
 
     public function addNewClanek(string $clanek, string $cestaKsouboru, string $abstrakt, string $autori):bool{
-        $nula = 0;
-        $null = NULL;
+        $clanek = htmlspecialchars($clanek);
+        $cestaKsouboru = htmlspecialchars($cestaKsouboru);
+        $abstrakt = htmlspecialchars($abstrakt);
+        $autori = htmlspecialchars($autori);
+
+        $poleHodnot[0]= 0;
+        $poleKlicu[0]= ':s';
+        $poleHodnot[1]= 0;
+        $poleKlicu[1]= ':r1';
+        $poleHodnot[2]= 0;
+        $poleKlicu[2]= ':r2';
+        $poleHodnot[3]= 0;
+        $poleKlicu[3]= ':r3';
+        $poleHodnot[4]= 0;
+        $poleKlicu[4]= ':h1';
+        $poleHodnot[5]= 0;
+        $poleKlicu[5]= ':h2';
+        $poleHodnot[6]= 0;
+        $poleKlicu[6]= ':h3';
+        $poleHodnot[7]= $clanek;
+        $poleKlicu[7]= ':n';
+        $poleHodnot[8]= $abstrakt;
+        $poleKlicu[8]= ':a';
+        $poleHodnot[9]= $cestaKsouboru;
+        $poleKlicu[9]= ':c';
+        $poleHodnot[10]= $autori;
+        $poleKlicu[10]= ':au';
+
         //vlozeni noveho clanku do tabulky
         $insertStatement = "schvalen, recenzent_1, recenzent_2, recenzent_3, hodnoceni_1, hodnoceni_2, hodnoceni_3, nazev, abstrakt, cesta, autori";
         // hodnoty pro vlozeni do tabulky uzivatelu
-        $insertValues = "'0', '0', '0', '0', '0', '0', '0', '$clanek', '$abstrakt', '$cestaKsouboru', '$autori'";
+        $insertValues = ":s, :r1, :r2, :r3, :h1, :h2, :h3, :n, :a, :c, :au";
         // provedu dotaz a vratim jeho vysledek
-        return $this->insertIntoTable(TABLE_CLANEK, $insertStatement, $insertValues);
+        return $this->insertIntoTable(TABLE_CLANEK, $insertStatement, $insertValues, $poleKlicu, $poleHodnot);
     }
     public function getPosledniClanek(){
-        $clanek = $this->selectFromTable(TABLE_CLANEK, "idCLANEK = (SELECT MAX(idCLANEK) FROM CLANEK)");
-        // vracim prvni nalezene pravo
+
+        $clanek = $this->selectFromTable(TABLE_CLANEK, "idCLANEK = (SELECT MAX(idCLANEK) FROM CLANEK)", "", [], []);
+        // vracim prvni nalezeny clanek
         return $clanek[0];
 
     }
-    public function addNewClankyAutora($idClanku, $id_prihlasenehoU){
+    public function addNewClankyAutora($idClanku, $id_prihlasenehoU): bool {
+        $idClanku = htmlspecialchars($idClanku);
+        $id_prihlasenehoU = htmlspecialchars($id_prihlasenehoU);
         $insertStatement = "id_uzivatel, idCLANEK";
-        $insertValues = "'$id_prihlasenehoU', '$idClanku'";
-        return $this->insertIntoTable(TABLE_CLANKY_AUTORA, $insertStatement, $insertValues);
+        $insertValues = ":id_uzivatel, :idCLANEK";
+
+        $poleHodnot[0]= $id_prihlasenehoU;
+        $poleKlicu[0]= ':id_uzivatel';
+        $poleHodnot[1]= $idClanku;
+        $poleKlicu[1]= ':idCLANEK';
+
+        return $this->insertIntoTable(TABLE_CLANKY_AUTORA, $insertStatement, $insertValues,  $poleKlicu, $poleHodnot);
     }
 
-    public function addNewDotaz($email, $jmeno, $dotaz){
+    public function addNewDotaz($email, $jmeno, $dotaz): bool {
+        $email = htmlspecialchars($email);
+        $jmeno = htmlspecialchars($jmeno);
+        $dotaz = htmlspecialchars($dotaz);
+        $poleHodnot[0]= $email;
+        $poleKlicu[0]= ':e';
+        $poleHodnot[1]= $jmeno;
+        $poleKlicu[1]= ':j';
+        $poleHodnot[2] = $dotaz;
+        $poleKlicu[2] = ':d';
+
         $insertStatement = "e_mail, jmeno, dotaz";
-        $insertValues = "'$email', '$jmeno', '$dotaz'";
-        return $this->insertIntoTable(TABLE_DOTAZ, $insertStatement, $insertValues);
+        $insertValues = ":e, :j, :d";
+        return $this->insertIntoTable(TABLE_DOTAZ, $insertStatement, $insertValues, $poleKlicu, $poleHodnot);
     }
 
     /**
@@ -758,7 +1051,17 @@ class DatabaseModel{
      * @param $uzivatele
      * @return int
      */
-    public function getPocetAutoru($uzivatele){
+    public function getPocetAutoru($uzivatele): int
+    {
+        foreach ($uzivatele as $u) {
+            // Projděte každý článek a escapujte hodnoty
+            foreach ($u as $hodnota) {
+                if($hodnota != null){
+                    $hodnota = htmlspecialchars($hodnota);
+                }
+            }
+        }
+
         $pocet = 0;
         foreach ($uzivatele as $u){
             if($u['id_pravo']==4 && $u['Zablokovany'] == 0){
@@ -768,29 +1071,36 @@ class DatabaseModel{
         return $pocet;
     }
 
-    public function odstranClanek($idClanku){
-        //pretypovat na int mozna
+    public function odstranClanek($idClanku): void {
+        $idClanku = htmlspecialchars($idClanku);
+        $poleHodnot[0] = $idClanku;
+        $poleKlicu[0] = ':kIdClanku';
+        $where = 'idCLANEK=:kIdClanku';
         $this->odstranClanekAutor($idClanku);
-        $where = 'idCLANEK = '.$idClanku;
-        $this->deleteFromTable(TABLE_CLANEK, $where);
+        $this->deleteFromTable(TABLE_CLANEK, $where, $poleKlicu, $poleHodnot);
     }
 
-    public function odstranClanekAutor($idClanku){
-        $where = 'idCLANEK ='.$idClanku;
-        /*$clanekAutoru = $this->selectFromTable(TABLE_CLANKY_AUTORA, $where,"");
-        foreach ($clanekAutoru as $cA){
-            //$u = $this->getUserById($cA['id_uzivatel']);
-            //
-            $this->updateUserClanek(null,$cA['id_uzivatel']);
-        }*/
-        $this->deleteFromTable(TABLE_CLANKY_AUTORA, $where);
+    public function odstranClanekAutor($idClanku): void {
+        $idClanku = htmlspecialchars($idClanku);
+        $poleHodnot[0] = $idClanku;
+        $poleKlicu[0] = ':kIdClanku';
+        $where = 'idCLANEK=:kIdClanku';
+        $this->deleteFromTable(TABLE_CLANKY_AUTORA, $where, $poleKlicu, $poleHodnot);
+    }
+
+    public function odstranDotaz($dotaz): void {
+        $dotaz =htmlspecialchars($dotaz);
+        $poleHodnot[0] = $dotaz;
+        $poleKlicu[0] = ':kDotaz';
+        $where = 'id_dotaz=:kDotaz';
+        $this->deleteFromTable(TABLE_DOTAZ, $where, $poleKlicu, $poleHodnot);
     }
 
     /**
      * vrati vsechny recenzenty
      * @return array
      */
-    public function vyberRecenzenty(){
+    public function vyberRecenzenty(): array {
         $users = $this->getAllUsers();
         $uzivatele = [];
         foreach ($users as $u){
@@ -804,7 +1114,7 @@ class DatabaseModel{
 
 }
 
-?>
+
 
 
 

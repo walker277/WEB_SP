@@ -15,11 +15,6 @@ $tplHeaders = new TemplateBasics();
 
 <!-- Vypis obsahu sablony -->
 <?php
-// muze se hodit:
-//<form method='post'>
-//    <input type='hidden' name='id_user' value=''>
-//    <button type='submit' name='action' value='delete'>Smazat</button>
-//</form>
 
 // hlavicka
 if($tplData['prihlasen']){

@@ -127,7 +127,7 @@ if($tplData['prihlasen']){
                                     <label for="abstrakt">abstrakt</label>
                                     <span class="input-group">
                                         <span class="input-group-text fa-pencil"></span>
-                                        <textarea class="form-control" rows="4" placeholder="zadejte abstrakt" name="abstrakt" required></textarea>
+                                        <textarea class="form-control" rows="4" placeholder="zadejte abstrakt" id="abstrakt" name="abstrakt" required></textarea>
                                     </span>
                                 </div>
                             </div>
@@ -162,7 +162,7 @@ if($tplData['prihlasen']){
             $navyseni++;
             $idForm = 'form'.$navyseni;
             $Form = '#'.$idForm;
-            $idDiv = 'pdfdiv'.$navyseni;;
+            $idDiv = 'pdfdiv'.$navyseni;
             $divId = '#'.$idDiv
     ?>
         <div class="py-3">
@@ -203,11 +203,10 @@ if($tplData['prihlasen']){
                                                 $text2 = $text2.' (zatím nehodnotil)';
                                             }
                                         }else{
+                                            $hodnoceni = $aC['hodnoceni_1'];
                                             if($u['pohlavi'] === 'zena'){
-                                                $hodnoceni = $aC['hodnoceni_1'];
                                                 $text2 = $text2.': ohodnotila '. $hodnoceni. ' body';
                                             }else{
-                                                $hodnoceni = $aC['hodnoceni_1'];
                                                 $text2 = $text2.': ohodnotil '. $hodnoceni. ' body';
                                             }
                                         }
@@ -226,11 +225,10 @@ if($tplData['prihlasen']){
                                                 $text2 = $text2.' (zatím nehodnotil)';
                                             }
                                         }else{
+                                            $hodnoceni = $aC['hodnoceni_2'];
                                             if($u['pohlavi'] === 'zena'){
-                                                $hodnoceni = $aC['hodnoceni_2'];
                                                 $text2 = $text2.': ohodnotila '. $hodnoceni. ' body';
                                             }else{
-                                                $hodnoceni = $aC['hodnoceni_2'];
                                                 $text2 = $text2.': ohodnotil '. $hodnoceni. ' body';
                                             }
                                         }
@@ -243,11 +241,10 @@ if($tplData['prihlasen']){
                                         $text4 = ', '.$u['jmeno_prijmeni'];
                                         $text2 = $text2.$text4;
                                         if($aC['hodnoceni_3'] != 0){
+                                            $hodnoceni = $aC['hodnoceni_3'];
                                             if($u['pohlavi'] === 'zena'){
-                                                $hodnoceni = $aC['hodnoceni_3'];
                                                 $text2 = $text2.': ohodnotila '. $hodnoceni. ' body';
                                             }else{
-                                                $hodnoceni = $aC['hodnoceni_3'];
                                                 $text2 = $text2.': ohodnotil '. $hodnoceni. ' body';
                                             }
                                         }else{
@@ -335,17 +332,16 @@ if($tplData['prihlasen']){
                         <div class="row text-center mt-3">
                             <div class="col-12">
                                 <?php
-                                $cesta = $aC['cesta'];
                                 // \ použity aby ' byl součástí řetězce
-                                echo '<button class="btn btn-primary" onclick="window.open(\'' . $cesta . '\', \'_blank\')">Stáhnout PDF článku</button>';
+                                echo '<button class="btn btn-primary" onclick="window.open(\'' . $aC['cesta'] . '\', \'_blank\')">Stáhnout PDF článku</button>';
                                 ?>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row text-left mt-3">
+                    <div class="row text-left text-light mt-3">
                         <?php
-                        echo"<div class='text-right col-12 collapse bg-light' id=$idForm>
+                        echo"<div class='text-right col-12 collapse bg-secondary' id=$idForm>
                             <form action='' method='post' enctype='multipart/form-data'>
                                 <div class='row text-center'>
                                     <div class='form-group col-12'>

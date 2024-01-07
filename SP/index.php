@@ -11,4 +11,3 @@ require_once("app/ApplicationStart.class.php");
 $app = new ApplicationStart();
 $app->appStart();
 
-?>

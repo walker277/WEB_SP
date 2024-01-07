@@ -1,21 +1,23 @@
 <?php
 // nactu rozhrani kontroleru
 require_once("app/Controllers/IController.interface.php");
-
+// pripojim objekt pro spolecny kod
+require("app/Controllers/BaseController.class.php");
 /**
  * Ovladac zajistujici vypsani stranky s Osobnimi udaji uzivatele
  */
-class OsobniUdajeController implements IController {
+class OsobniUdajeController extends BaseController implements IController {
     /** @var DatabaseModel $db  Sprava databaze. */
-    private $db;
+    //private DatabaseModel $db;
 
     /**
      * Inicializace pripojeni k databazi.
      */
     public function __construct() {
         // inicializace prace s DB
-        require_once ("app/Models/DatabaseModel.class.php");
-        $this->db = new DatabaseModel();
+        //require_once ("app/Models/DatabaseModel.class.php");
+        //$this->db = new DatabaseModel();
+        parent::__construct();
     }
 
     /**
@@ -26,13 +28,19 @@ class OsobniUdajeController implements IController {
     public function show(string $pageTitle):string {
         global $tplData;
         $tplData = [];
+        global $tplData;
+        $tplData = [];
+        $this->naplnVstupniData($pageTitle);
+        $this->priselDotaz();
         //// vsechna data sablony budou globalni
-        $tplData['prihlasen'] = $this->db->isUserLogged();
+        /*$tplData['prihlasen'] = $this->db->isUserLogged();
         // nazev
         $tplData['title'] = $pageTitle;
 
         $tplData['clanky'] = $this->db->getAllClanky();
-        $tplData['uzivatele'] = $this->db->getAllUsers();
+        $tplData['uzivatele'] = $this->db->getAllUsers();*/
+
+
 
         //otestovani jesli mame dotaz
         if(isset($_POST['odeslano'])){
@@ -41,8 +49,15 @@ class OsobniUdajeController implements IController {
             }
         }
 
+
+        $obsah = $this->prihalsOdhlasUzivatele('app/Views/DomaciStrankaTemplate.tpl.php', 'app/Views/IntroductionTemplate.tpl.php');
+        $tplData = $this->tplData;
+
+        if($obsah != null ) {
+            return $obsah;
+        }
         // zpracovani odeslanych formularu na prihlaseni - mam akci?
-        if(isset($_POST["action"])) {
+        /*if(isset($_POST["action"])) {
             // mam pozadavek na login ?
             if ($_POST["action"] == "login") {
                 // mam co ulozit?
@@ -63,8 +78,7 @@ class OsobniUdajeController implements IController {
                         // pripojim sablonu, cimz ji i vykonam
                         require("app/Views/DomaciStrankaTemplate.tpl.php");
                         // ziskam obsah output bufferu, tj. vypsanou sablonu
-                        $obsah = ob_get_clean();
-                        return $obsah;
+                        return ob_get_clean();
                     } else {
                         echo "<script>alert('ERROR: Přihlášení uživatele se nezdařilo');</script>";
                     }
@@ -84,13 +98,11 @@ class OsobniUdajeController implements IController {
                 // pripojim sablonu, cimz ji i vykonam
                 require("app/Views/IntroductionTemplate.tpl.php");
                 // ziskam obsah output bufferu, tj. vypsanou sablonu
-                $obsah = ob_get_clean();
-
                 // vratim sablonu naplnenou daty
-                return $obsah;
+                return ob_get_clean();
 
             }
-        }
+        }*/
 
         if($tplData['prihlasen']){
             $user = $this->db->getLoggedUserData();
@@ -100,6 +112,8 @@ class OsobniUdajeController implements IController {
 
             //zpracovani odeslanych formularu
             if(isset($_POST['potvrzeni'])){
+                $user = $this->db->getLoggedUserData();
+                $UzivID = $user['id_uzivatel'];
                 //mam vsechny pozadovane hodnoty?
                 if( (isset($_POST['email']) && ($_POST['email'] != "")) ){
                     $res = $this->db->updateUserEmail($UzivID, $_POST['email']);
@@ -139,7 +153,16 @@ class OsobniUdajeController implements IController {
                 }
             }
 
-        $tplData['prihlasen'] = $this->db->isUserLogged();
+
+
+        $tplData = $this->tplData;
+
+        $obsah =  $this->rozpoznejPrihlasenehoOdhlaseneho('app/Views/OsobniUdajeTemplate.tpl.php','app/Views/IntroductionTemplate.tpl.php');
+
+
+        return $obsah;
+
+        /*$tplData['prihlasen'] = $this->db->isUserLogged();
 
         if($tplData['prihlasen']) {
             $tplData['id_pravo'] = $this->db->getLoggedUserData()['id_pravo'];
@@ -154,10 +177,8 @@ class OsobniUdajeController implements IController {
             // pripojim sablonu, cimz ji i vykonam
             require("app/Views/OsobniUdajeTemplate.tpl.php");
             // ziskam obsah output bufferu, tj. vypsanou sablonu
-            $obsah = ob_get_clean();
-
             // vratim sablonu naplnenou daty
-            return $obsah;
+            return ob_get_clean();
         }else{
             //ulozim si data o uzivateli do pole
             $tplData['uzivatel'] = $this->db->getLoggedUserData();
@@ -168,13 +189,9 @@ class OsobniUdajeController implements IController {
             // pripojim sablonu, cimz ji i vykonam
             require("app/Views/IntroductionTemplate.tpl.php");
             // ziskam obsah output bufferu, tj. vypsanou sablonu
-            $obsah = ob_get_clean();
-
             // vratim sablonu naplnenou daty
-            return $obsah;
-        }
+            return ob_get_clean();
+        }*/
 
     }
 }
-
-?>

@@ -70,11 +70,10 @@ if($tplData['prihlasen']){
                                                     $text2 = $text2.' (zatím nehodnotil)';
                                                 }
                                             }else{
+                                                $hodnoceni = $aC['hodnoceni_1'];
                                                 if($u['pohlavi'] === 'zena'){
-                                                    $hodnoceni = $aC['hodnoceni_1'];
                                                     $text2 = $text2.': ohodnotila '. $hodnoceni. ' body';
                                                 }else{
-                                                    $hodnoceni = $aC['hodnoceni_1'];
                                                     $text2 = $text2.': ohodnotil '. $hodnoceni. ' body';
                                                 }
                                             }
@@ -93,11 +92,10 @@ if($tplData['prihlasen']){
                                                     $text2 = $text2.' (zatím nehodnotil)';
                                                 }
                                             }else{
+                                                $hodnoceni = $aC['hodnoceni_2'];
                                                 if($u['pohlavi'] === 'zena'){
-                                                    $hodnoceni = $aC['hodnoceni_2'];
                                                     $text2 = $text2.': ohodnotila '. $hodnoceni. ' body';
                                                 }else{
-                                                    $hodnoceni = $aC['hodnoceni_2'];
                                                     $text2 = $text2.': ohodnotil '. $hodnoceni. ' body';
                                                 }
                                             }
@@ -110,11 +108,10 @@ if($tplData['prihlasen']){
                                             $text4 = ', '.$u['jmeno_prijmeni'];
                                             $text2 = $text2.$text4;
                                             if($aC['hodnoceni_3'] != 0){
+                                                $hodnoceni = $aC['hodnoceni_3'];
                                                 if($u['pohlavi'] === 'zena'){
-                                                    $hodnoceni = $aC['hodnoceni_3'];
                                                     $text2 = $text2.': ohodnotila '. $hodnoceni. ' body';
                                                 }else{
-                                                    $hodnoceni = $aC['hodnoceni_3'];
                                                     $text2 = $text2.': ohodnotil '. $hodnoceni. ' body';
                                                 }
                                             }else{
@@ -146,9 +143,8 @@ if($tplData['prihlasen']){
                                 </div>
                                 <div class="text-right col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                     <?php
-                                    $cesta = $aC['cesta'];
                                     // \ použity aby ' byl součástí řetězce
-                                    echo '<button class="btn btn-primary" onclick="window.open(\'' . $cesta . '\', \'_blank\')">Stáhnout PDF článku</button>';
+                                    echo '<button class="btn btn-primary" onclick="window.open(\'' . $aC['cesta'] . '\', \'_blank\')">Stáhnout PDF článku</button>';
                                     ?>
                                 </div>
                             </div>
@@ -195,6 +191,7 @@ if($tplData['prihlasen']){
                     ?>
                         <div class="text-justify col-12 mt-2">
                         <?php
+                        $jmeno = "";
                             if ($aC['recenzent_1'] != 0){
                                 foreach ($tplData['uzivatele'] as $u){
                                     if($u['id_uzivatel'] == $aC['recenzent_1']){

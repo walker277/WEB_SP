@@ -37,8 +37,7 @@ if($tplData['prihlasen']){
                     <h3 class="text-primary">Registrace</h3>
                 </div>
                 <div class="card-body text-justify " >
-                    <form action="" method="POST"
-                          accept-charset="UTF-8" autocomplete="off" enctype="multipart/form-data">
+                    <form action="" method="POST" accept-charset="UTF-8">
                         <div class="row" >
                             <div class="form-group col-xl-6 col-lg-6 col-md-6 col-sm-12">
                                 <label for="emailR">Email:

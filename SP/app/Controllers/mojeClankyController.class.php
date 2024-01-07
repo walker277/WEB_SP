@@ -2,21 +2,23 @@
 <?php
 // nactu rozhrani kontroleru
 require_once("app/Controllers/IController.interface.php");
-
+// pripojim objekt pro spolecny kod
+require("app/Controllers/BaseController.class.php");
 /**
  * Ovladac zajistujici vypsani stranky se spravou uzivatelu.
  */
-class mojeClankyController implements IController {
+class mojeClankyController extends BaseController implements IController {
 
     /** @var DatabaseModel $db  Sprava databaze. */
-    private $db;
+    //private DatabaseModel $db;
     /**
      * Inicializace pripojeni k databazi.
      */
     public function __construct() {
         // inicializace prace s DB
-        require_once ("app/Models/DatabaseModel.class.php");
-        $this->db = new DatabaseModel();
+        //require_once ("app/Models/DatabaseModel.class.php");
+        //$this->db = new DatabaseModel();
+        parent::__construct();
     }
 
     /**
@@ -26,23 +28,37 @@ class mojeClankyController implements IController {
      */
     public function show(string $pageTitle):string {
         //// vsechna data sablony budou globalni
-        global $tplData;
+        /*global $tplData;
         $tplData = [];
         // nazev
         $tplData['title'] = $pageTitle;
         $tplData['uzivatele'] = $this->db->getAllUsers();
         $tplData['clanky'] = $this->db->getAllClanky();
-        $tplData['uzivatele'] = $this->db->getAllUsers();
+        $tplData['uzivatele'] = $this->db->getAllUsers();*/
+
 
         //otestovani jesli mame dotaz
-        if(isset($_POST['odeslano'])){
+        /*if(isset($_POST['odeslano'])){
             if ( (isset($_POST["email"]) && $_POST["email"] != "") && (isset($_POST["jmeno"]) && $_POST["jmeno"] != "") && (isset($_POST["dotaz"]) && $_POST["dotaz"] != "")) {
                 $this->db->addNewDotaz($_POST['email'], $_POST['jmeno'], $_POST['dotaz']);
             }
+        }*/
+        global $tplData;
+        $tplData = [];
+        $this->naplnVstupniData($pageTitle);
+
+        $this->priselDotaz();
+
+        $obsah = $this->prihalsOdhlasUzivatele('app/Views/DomaciStrankaTemplate.tpl.php', 'app/Views/IntroductionTemplate.tpl.php');
+        $tplData = $this->tplData;
+
+        if($obsah != null ) {
+            return $obsah;
         }
 
+
         // zpracovani odeslanych formularu na prihlaseni - mam akci?
-        if(isset($_POST["action"])){
+        /*if(isset($_POST["action"])){
             // mam pozadavek na login ?
             if($_POST["action"] == "login") {
                 // mam co ulozit?
@@ -64,9 +80,8 @@ class mojeClankyController implements IController {
                         // pripojim sablonu, cimz ji i vykonam
                         require("app/Views/DomaciStrankaTemplate.tpl.php");
                         // ziskam obsah output bufferu, tj. vypsanou sablonu
-                        $obsah = ob_get_clean();
                         // vratim sablonu naplnenou daty
-                        return $obsah;
+                        return ob_get_clean();
                     }else{
                         echo "<script>alert('ERROR: Přihlášení uživatele se nezdařilo');</script>";
                     }
@@ -87,17 +102,16 @@ class mojeClankyController implements IController {
                     // pripojim sablonu, cimz ji i vykonam
                     require("app/Views/IntroductionTemplate.tpl.php");
                     // ziskam obsah output bufferu, tj. vypsanou sablonu
-                    $obsah = ob_get_clean();
-                    return $obsah;
+                    return ob_get_clean();
                 }
             }
             // neznamy pozadavek
             else {
                 echo "<script>alert('Chyba: Nebyla rozpoznána požadovaná akce.');</script>";
             }
-        }
+        }*/
 
-        $tplData['pocetSpoluAutoru'] = 0;
+        $this->tplData['pocetSpoluAutoru'] = 0;
         if(isset($_POST['zadano'])){
             if(isset($_POST['pocetAutoru']) && $_POST['pocetAutoru'] != ""){
                 $pocetUzivatelu = $this->db->getPocetAutoru($this->db->getAllUsers());
@@ -111,7 +125,9 @@ class mojeClankyController implements IController {
 
         if($this->db->isUserLogged()){
             $tplData['autori'][] = $this->db->getLoggedUserData()['jmeno_prijmeni'];
+            $this->tplData['autori'][] = $tplData['autori'];
             $tplData['autoriU'][] = $this->db->getLoggedUserData();
+            $this->tplData['autoriU'][] = $tplData['autoriU'];
         }
 
         //zpracovani formularu
@@ -237,7 +253,7 @@ class mojeClankyController implements IController {
 
 
         //ulozeni stavu prihlaseni abychom mohli v sablone rozlisovat hlavicky
-        $tplData['prihlasen'] = $this->db->isUserLogged();
+        /*$tplData['prihlasen'] = $this->db->isUserLogged();
         if($tplData['prihlasen']) {
             $tplData['uzivatele'] = $this->db->getAllUsers();
             $tplData['id_pravo'] = $this->db->getLoggedUserData()['id_pravo'];
@@ -251,15 +267,14 @@ class mojeClankyController implements IController {
             $tplData['autoriClanku'] = $this->db->getAllUzivClanku($tplData['idAutoruClanku'],$this->db->getAllUsers());
         }
         //Pokud je uzivatel prihlasen zobrazime sablonu ktera je urcena prihlasenym uzivatelum
-        if($this->db->isUserLogged() == true){
+        if($this->db->isUserLogged()){
             //// vypsani prislusne sablony
             // zapnu output buffer pro odchyceni vypisu sablony
             ob_start();
             // pripojim sablonu, cimz ji i vykonam
             require("app/Views/mojeClankyTemplate.tpl.php");
             // ziskam obsah output bufferu, tj. vypsanou sablonu
-            $obsah = ob_get_clean();
-            return $obsah;
+            return ob_get_clean();
         } else{
             //// vypsani prislusne sablony
             // zapnu output buffer pro odchyceni vypisu sablony
@@ -267,9 +282,14 @@ class mojeClankyController implements IController {
             // pripojim sablonu, cimz ji i vykonam
             require("app/Views/IntroductionTemplate.tpl.php");
             // ziskam obsah output bufferu, tj. vypsanou sablonu
-            $obsah = ob_get_clean();
             // vratim sablonu naplnenou daty
-            return $obsah;
-        }
+            return ob_get_clean();
+        }*/
+        $tplData = $this->tplData;
+
+        $obsah =  $this->rozpoznejPrihlasenehoOdhlaseneho('app/Views/mojeClankyTemplate.tpl.php','app/Views/IntroductionTemplate.tpl.php');
+
+
+        return $obsah;
     }
 }

@@ -1,22 +1,24 @@
 <?php
 // nactu rozhrani kontroleru
 require_once("app/Controllers/IController.interface.php");
-
+// pripojim objekt pro spolecny kod
+require("BaseController.class.php");
 /**
  * Ovladac zajistujici vypsani uvodni stranky.
  */
-class IntroductionController implements IController {
+class IntroductionController extends BaseController implements IController {
 
     /** @var DatabaseModel $db  Sprava databaze. */
-    private $db;
+    //private DatabaseModel $db;
 
     /**
      * Inicializace pripojeni k databazi.
      */
     public function __construct() {
         // inicializace prace s DB
-        require_once ("app/Models/DatabaseModel.class.php");
-        $this->db = new DatabaseModel();
+       /* require_once ("app/Models/DatabaseModel.class.php");
+        $this->db = new DatabaseModel();*/
+        parent::__construct();
     }
 
     /**
@@ -25,7 +27,19 @@ class IntroductionController implements IController {
      * @return string               Vypis v sablone.
      */
     public function show(string $pageTitle):string {
-        //// vsechna data sablony budou globalni
+        global $tplData;
+        $tplData = [];
+
+        $this->naplnVstupniData($pageTitle);
+        $this->priselDotaz();
+
+        $obsah = $this->prihalsOdhlasUzivatele('app/Views/DomaciStrankaTemplate.tpl.php', 'app/Views/IntroductionTemplate.tpl.php');
+        $tplData = $this->tplData;
+
+        if($obsah != null ) {
+            return $obsah;
+        }
+        /*//// vsechna data sablony budou globalni
         global $tplData;
         $tplData = [];
         // nazev
@@ -41,6 +55,7 @@ class IntroductionController implements IController {
                 $this->db->addNewDotaz($_POST['email'], $_POST['jmeno'], $_POST['dotaz']);
             }
         }
+
 
         // zpracovani odeslanych formularu na prihlaseni - mam akci?
         if(isset($_POST["action"])){
@@ -64,9 +79,8 @@ class IntroductionController implements IController {
                         // pripojim sablonu, cimz ji i vykonam
                         require("app/Views/DomaciStrankaTemplate.tpl.php");
                         // ziskam obsah output bufferu, tj. vypsanou sablonu
-                        $obsah = ob_get_clean();
                         // vratim sablonu naplnenou daty
-                        return $obsah;
+                        return ob_get_clean();
                     }else{
                         echo "<script>alert('ERROR: Přihlášení uživatele se nezdařilo');</script>";
                     }
@@ -86,18 +100,28 @@ class IntroductionController implements IController {
                     // pripojim sablonu, cimz ji i vykonam
                     require("app/Views/IntroductionTemplate.tpl.php");
                     // ziskam obsah output bufferu, tj. vypsanou sablonu
-                    $obsah = ob_get_clean();
                     // vratim sablonu naplnenou daty
-                    return $obsah;
+                    return ob_get_clean();
                 }
             }
             // neznamy pozadavek
             else {
                 echo "<script>alert('Chyba: Nebyla rozpoznána požadovaná akce.');</script>";
             }
-        }
+        }*/
         //ulozeni stavu prihlaseni abychom mohli v sablone rozlisovat hlavicky
-        $tplData['prihlasen'] = $this->db->isUserLogged();
+        $tplData = $this->tplData;
+
+        $this->tplData = $tplData;
+
+    $promena = 1;
+    var_dump($promena);
+        $this->db->userLogout();
+        $obsah = $this->rozpoznejPrihlasenehoOdhlaseneho('app/Views/DomaciStrankaTemplate.tpl.php', 'app/Views/IntroductionTemplate.tpl.php');
+
+
+        return $obsah;
+        /*$tplData['prihlasen'] = $this->db->isUserLogged();
         if($tplData['prihlasen']) {
             $tplData['id_pravo'] = $this->db->getLoggedUserData()['id_pravo'];
         }
@@ -118,14 +142,14 @@ class IntroductionController implements IController {
             require("app/Views/IntroductionTemplate.tpl.php");
             // ziskam obsah output bufferu, tj. vypsanou sablonu
             $obsah = ob_get_clean();
-        }
+        }*
 
 
 
         // vratim sablonu naplnenou daty
-        return $obsah;
+        return $obsah;*/
+
     }
 
 }
 
-?>

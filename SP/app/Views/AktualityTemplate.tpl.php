@@ -127,13 +127,13 @@ if($tplData['prihlasen']){
             <!-- The slideshow -->
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <img src="images/forest.jpg">
+                    <img src="images/forest.jpg" alt="">
                 </div>
                 <div class="carousel-item">
-                    <img src="images/mountain2.jpg">
+                    <img src="images/mountain2.jpg" alt="">
                 </div>
                 <div class="carousel-item">
-                    <img src="images/udoli2.jpg">
+                    <img src="images/udoli2.jpg" alt="">
                 </div>
             </div>
 

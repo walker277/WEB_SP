@@ -1,21 +1,23 @@
 <?php
 // nactu rozhrani kontroleru
 require_once("app/Controllers/IController.interface.php");
-
+// pripojim objekt pro spolecny kod
+require("app/Controllers/BaseController.class.php");
 /**
  * Ovladac zajistujici vypsani stranky s Registraci uzivatelu
  */
-class RegistraceController implements IController {
+class RegistraceController extends BaseController implements IController {
     /** @var DatabaseModel $db  Sprava databaze. */
-    private $db;
+    //private DatabaseModel $db;
 
     /**
      * Inicializace pripojeni k databazi.
      */
     public function __construct() {
         // inicializace prace s DB
-        require_once ("app/Models/DatabaseModel.class.php");
-        $this->db = new DatabaseModel();
+        //require_once ("app/Models/DatabaseModel.class.php");
+        //$this->db = new DatabaseModel();
+        parent::__construct();
     }
 
     /**
@@ -27,6 +29,12 @@ class RegistraceController implements IController {
         //// vsechna data sablony budou globalni
         global $tplData;
         $tplData = [];
+        $this->naplnVstupniData($pageTitle);
+
+        $this->priselDotaz();
+        /*global $tplData;
+        $tplData = [];
+
         // nazev
         $tplData['title'] = $pageTitle;
 
@@ -40,7 +48,8 @@ class RegistraceController implements IController {
             if ( (isset($_POST["email"]) && $_POST["email"] != "") && (isset($_POST["jmeno"]) && $_POST["jmeno"] != "") && (isset($_POST["dotaz"]) && $_POST["dotaz"] != "")) {
                 $this->db->addNewDotaz($_POST['email'], $_POST['jmeno'], $_POST['dotaz']);
             }
-        }
+        }*/
+
 
         if(isset($_POST['potvrzeni'])){
             //mam vsechny pozadovane hodnoty?
@@ -53,7 +62,7 @@ class RegistraceController implements IController {
                 //zahashovani hesla
                 $hash = password_hash($password, PASSWORD_BCRYPT);
                 if($this->db->jeUsernameVolne($_POST['username'],$this->db->getAllUsers())){
-                    $res = $this->db->addNewUser($_POST['username'], $hash, $_POST['jmeno'], $_POST['email'], 4, $_POST['pohlavi'], $_POST['narozeni'] );//byl vlozen?
+                    $res = $this->db->addNewUser($_POST['username'], $hash, $_POST['jmeno'], $_POST['email'], $_POST['pohlavi'], $_POST['narozeni'] );//byl vlozen?
                     if($res){
                         echo "<script>alert('OK: Uživatel byl přidán do databáze');</script>";
                     }else{
@@ -69,8 +78,14 @@ class RegistraceController implements IController {
         }
 
 
+        $obsah = $this->prihalsOdhlasUzivatele('app/Views/DomaciStrankaTemplate.tpl.php', 'app/Views/IntroductionTemplate.tpl.php');
+        $tplData = $this->tplData;
+
+        if($obsah != null ) {
+            return $obsah;
+        }
         // zpracovani odeslanych formularu na prihlaseni - mam akci?
-        if(isset($_POST["action"])){
+        /*if(isset($_POST["action"])){
             // mam pozadavek na login ?
             if($_POST["action"] == "login") {
                 // mam co ulozit?
@@ -91,8 +106,7 @@ class RegistraceController implements IController {
                         // pripojim sablonu, cimz ji i vykonam
                         require("app/Views/DomaciStrankaTemplate.tpl.php");
                         // ziskam obsah output bufferu, tj. vypsanou sablonu
-                        $obsah = ob_get_clean();
-                        return $obsah;
+                        return ob_get_clean();
                     }else{
                         echo "<script>alert('ERROR: Přihlášení uživatele se nezdařilo');</script>";
                     }
@@ -112,30 +126,36 @@ class RegistraceController implements IController {
                     // pripojim sablonu, cimz ji i vykonam
                     require("app/Views/IntroductionTemplate.tpl.php");
                     // ziskam obsah output bufferu, tj. vypsanou sablonu
-                    $obsah = ob_get_clean();
-                    return $obsah;
+                    return ob_get_clean();
                 }
             }
             // neznamy pozadavek
             else {
                 echo "<script>alert('Chyba: Nebyla rozpoznána požadovaná akce.');</script>";
             }
-        }
+        }*/
+
+        $tplData = $this->tplData;
+
+        $obsah =  $this->rozpoznejPrihlasenehoOdhlaseneho('app/Views/OsobniUdajeTemplate.tpl.php','app/Views/RegistraceTemplate.tpl.php');
+
+
+        return $obsah;
+
         //ulozeni stavu prihlaseni abychom mohli v sablone rozlisovat hlavicky
-        $tplData['prihlasen'] = $this->db->isUserLogged();
+        /*$tplData['prihlasen'] = $this->db->isUserLogged();
         if($tplData['prihlasen']) {
             $tplData['id_pravo'] = $this->db->getLoggedUserData()['id_pravo'];
         }
         //Pokud je uzivatel prihlasen zobrazime sablonu ktera je urcena prihlasenym uzivatelum
-        if($this->db->isUserLogged() == true){
+        if($this->db->isUserLogged()){
             //// vypsani prislusne sablony
             // zapnu output buffer pro odchyceni vypisu sablony
             ob_start();
             // pripojim sablonu, cimz ji i vykonam
             require("app/Views/OsobniUdajeTemplate.tpl.php");
             // ziskam obsah output bufferu, tj. vypsanou sablonu
-            $obsah = ob_get_clean();
-            return $obsah;
+            return ob_get_clean();
         } else{
             //// vypsani prislusne sablony
             // zapnu output buffer pro odchyceni vypisu sablony
@@ -143,12 +163,9 @@ class RegistraceController implements IController {
             // pripojim sablonu, cimz ji i vykonam
             require("app/Views/RegistraceTemplate.tpl.php");
             // ziskam obsah output bufferu, tj. vypsanou sablonu
-            $obsah = ob_get_clean();
             // vratim sablonu naplnenou daty
-            return $obsah;
-        }
+            return ob_get_clean();
+        }*/
 
     }
 }
-
-?>

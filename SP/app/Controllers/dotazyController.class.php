@@ -1,22 +1,25 @@
 <?php
 // nactu rozhrani kontroleru
 require_once("app/Controllers/IController.interface.php");
+// pripojim objekt pro spolecny kod
+require("app/Controllers/BaseController.class.php");
 
 /**
  * Ovladac zajistujici vypsani uvodni stranky.
  */
-class dotazyController implements IController {
+class dotazyController extends BaseController implements IController {
 
     /** @var DatabaseModel $db  Sprava databaze. */
-    private $db;
+    //private DatabaseModel $db;
 
     /**
      * Inicializace pripojeni k databazi.
      */
     public function __construct() {
         // inicializace prace s DB
-        require_once ("app/Models/DatabaseModel.class.php");
-        $this->db = new DatabaseModel();
+        //require_once ("app/Models/DatabaseModel.class.php");
+        //$this->db = new DatabaseModel();
+        parent::__construct();
     }
 
     /**
@@ -26,7 +29,7 @@ class dotazyController implements IController {
      */
     public function show(string $pageTitle):string {
         //// vsechna data sablony budou globalni
-        global $tplData;
+        /*global $tplData;
         $tplData = [];
         // nazev
         $tplData['title'] = $pageTitle;
@@ -40,10 +43,28 @@ class dotazyController implements IController {
             if ( (isset($_POST["email"]) && $_POST["email"] != "") && (isset($_POST["jmeno"]) && $_POST["jmeno"] != "") && (isset($_POST["dotaz"]) && $_POST["dotaz"] != "")) {
                 $this->db->addNewDotaz($_POST['email'], $_POST['jmeno'], $_POST['dotaz']);
             }
+        }*/
+        global $tplData;
+        $tplData = [];
+        $this->naplnVstupniData($pageTitle);
+
+        $this->priselDotaz();
+
+        if(isset($_POST['odstranD'])){
+            $this->db->odstranDotaz($_POST['idDotaz']);
         }
 
+        $tplData['dotazy'] = $this->db->getAllDotazy();
+        $this->tplData['dotazy'] = $tplData['dotazy'];
+
+        $obsah = $this->prihalsOdhlasUzivatele('app/Views/DomaciStrankaTemplate.tpl.php', 'app/Views/IntroductionTemplate.tpl.php');
+        $tplData = $this->tplData;
+
+        if($obsah != null ) {
+            return $obsah;
+        }
         // zpracovani odeslanych formularu na prihlaseni - mam akci?
-        if(isset($_POST["action"])){
+        /*if(isset($_POST["action"])){
             // mam pozadavek na login ?
             if($_POST["action"] == "login") {
                 // mam co ulozit?
@@ -64,9 +85,8 @@ class dotazyController implements IController {
                         // pripojim sablonu, cimz ji i vykonam
                         require("app/Views/DomaciStrankaTemplate.tpl.php");
                         // ziskam obsah output bufferu, tj. vypsanou sablonu
-                        $obsah = ob_get_clean();
                         // vratim sablonu naplnenou daty
-                        return $obsah;
+                        return ob_get_clean();
                     }else{
                         echo "<script>alert('ERROR: Přihlášení uživatele se nezdařilo');</script>";
                     }
@@ -86,18 +106,19 @@ class dotazyController implements IController {
                     // pripojim sablonu, cimz ji i vykonam
                     require("app/Views/IntroductionTemplate.tpl.php");
                     // ziskam obsah output bufferu, tj. vypsanou sablonu
-                    $obsah = ob_get_clean();
                     // vratim sablonu naplnenou daty
-                    return $obsah;
+                    return ob_get_clean();
                 }
             }
             // neznamy pozadavek
             else {
                 echo "<script>alert('Chyba: Nebyla rozpoznána požadovaná akce.');</script>";
             }
-        }
+        }*/
+
+
         //ulozeni stavu prihlaseni abychom mohli v sablone rozlisovat hlavicky
-        $tplData['prihlasen'] = $this->db->isUserLogged();
+        /*$tplData['prihlasen'] = $this->db->isUserLogged();
         if($tplData['prihlasen']) {
             $tplData['id_pravo'] = $this->db->getLoggedUserData()['id_pravo'];
         }
@@ -123,9 +144,14 @@ class dotazyController implements IController {
 
 
         // vratim sablonu naplnenou daty
+        return $obsah;*/
+        $tplData = $this->tplData;
+
+        $obsah =  $this->rozpoznejPrihlasenehoOdhlaseneho('app/Views/dotazyTemplate.tpl.php','app/Views/IntroductionTemplate.tpl.php');
+
+
         return $obsah;
         }
 
 }
 
-?>

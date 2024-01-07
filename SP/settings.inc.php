@@ -6,26 +6,23 @@
 ////// nastaveni pristupu k databazi ///////
 
 // prihlasovaci udaje k databazi
-define("DB_SERVER","127.0.0.1");
-define("DB_NAME","WSP");
-define("DB_USER","root");
-define("DB_PASS","");
+const DB_SERVER = "127.0.0.1";
+const DB_NAME = "WSP";
+const DB_USER = "root";
+const DB_PASS = "";
 
 // definice konkretnich nazvu tabulek
-define("TABLE_UZIVATEL","UZIVATEL");
-define("TABLE_PRAVO","pravo");
+const TABLE_UZIVATEL = "UZIVATEL";
+const TABLE_PRAVO = "pravo";
 
 /** Tabulka s pohadkami. */
-define("TABLE_CLANEK", "CLANEK");
-define("TABLE_CLANKY_AUTORA", "CLANKY_AUTORA");
-define("TABLE_DOTAZ", "DOTAZ");
+const TABLE_CLANEK = "CLANEK";
+const TABLE_CLANKY_AUTORA = "CLANKY_AUTORA";
+const TABLE_DOTAZ = "DOTAZ";
 
 /** Adresar kontroleru. */
 const DIRECTORY_CONTROLLERS = "app/Controllers";
 /** Adresar modelu. */
-const DIRECTORY_MODELS = "app/Models";
-/** Adresar sablon */
-const DIRECTORY_VIEWS = "app/Views";
 
 /** Klic defaultni webove stranky. */
 const DEFAULT_WEB_PAGE_KEY = "uvod";
@@ -119,5 +116,3 @@ const WEB_PAGES = array(
     ),
     //// KONEC: Sprava uzivatelu ////
 );
-
-?>

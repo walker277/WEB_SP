@@ -55,14 +55,14 @@ if($tplData['prihlasen']){
 <div class="container d-xl-none">
     <div class="row align-items-center">
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-            <img class="w-75 mx-auto d-block" src="images/priroda6.png">
+            <img class="w-75 mx-auto d-block" src="images/priroda6.png" alt="">
         </div>
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
             <h3 class="text-center font-weight-bold"> Maecenas eget</h3>
             <p class="text-center text-light">Sed blandit elementum sem, hendrerit ornare lorem dapibus id. Nam ut ultrices mi. Cras et dolor at libero luctus accumsan. Vivamus quis purus nunc. Pellentesque sit amet lacus quis augue facilisis volutpat eu quis mi. Sed vitae posuere quam. Ut egestas laoreet dui eu bibendum. Nam malesuada ligula lectus, sit amet commodo massa pellentesque at. </p>
         </div>
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 ">
-            <img class="w-75 mx-auto d-block" src="images/priroda1.png">
+            <img class="w-75 mx-auto d-block" src="images/priroda1.png" alt="">
         </div>
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
             <h3 class="text-center font-weight-bold">Curabitur libero</h3>
@@ -73,14 +73,14 @@ if($tplData['prihlasen']){
 <div class="container-fluid d-none d-xl-block">
     <div class="row align-items-center">
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
-            <img class="w-75 mx-auto d-block" src="images/priroda6.png">
+            <img class="w-75 mx-auto d-block" src="images/priroda6.png" alt="">
         </div>
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
             <h3 class="text-center font-weight-bold"> Maecenas eget</h3>
             <p class="text-center text-light">Sed blandit elementum sem, hendrerit ornare lorem dapibus id. Nam ut ultrices mi. Cras et dolor at libero luctus accumsan. Vivamus quis purus nunc. Pellentesque sit amet lacus quis augue facilisis volutpat eu quis mi. Sed vitae posuere quam. Ut egestas laoreet dui eu bibendum. Nam malesuada ligula lectus, sit amet commodo massa pellentesque at. </p>
         </div>
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 ">
-            <img class="w-75 mx-auto d-block" src="images/priroda1.png">
+            <img class="w-75 mx-auto d-block" src="images/priroda1.png" alt="">
         </div>
         <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
             <h3 class="text-center font-weight-bold">Curabitur libero</h3>
@@ -97,7 +97,7 @@ if($tplData['prihlasen']){
 <div class="container">
     <div class="row align-items-center">
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <img class="w-75 mx-auto d-block" src="images/priroda7.png">
+            <img class="w-75 mx-auto d-block" src="images/priroda7.png" alt="">
         </div>
         <div class="col-xl-6 col-lg-6 col-md-6 col-sm-12">
             <h3 class="text-center font-weight-bold">Ut convallis</h3>

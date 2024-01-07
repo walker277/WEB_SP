@@ -7,9 +7,10 @@ class TemplateBasics {
     /**
      * Hlavicka urcena prihlasenym uzivatelum
      * @param string $pageTitle Nazev stranky.
+     * @param int $id_pravo pravo prihlaseneho uzivatele
      * @return void
      */
-    public function getHTMLHeaderPrihlasen(string $pageTitle, int $id_pravo) {
+    public function getHTMLHeaderPrihlasen(string $pageTitle, int $id_pravo): void{
         ?>
         <!DOCTYPE html>
         <html lang="en">
@@ -130,7 +131,7 @@ class TemplateBasics {
      *  Vrati vrsek stranky az po oblast, ve ktere se vypisuje obsah stranky.
      *  @param string $pageTitle    Nazev stranky.
      */
-    public function getHTMLHeader(string $pageTitle) {
+    public function getHTMLHeader(string $pageTitle):void{
     ?>
     <!DOCTYPE html>
     <html lang="en">
