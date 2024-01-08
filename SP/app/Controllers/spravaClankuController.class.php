@@ -7,17 +7,11 @@ require("app/Controllers/BaseController.class.php");
  * Ovladac zajistujici vypsani stranky se spravou uzivatelu.
  */
 class spravaClankuController extends BaseController implements IController {
-
-    /** @var DatabaseModel $db  Sprava databaze. */
-    //private DatabaseModel $db;
-
     /**
      * Inicializace pripojeni k databazi.
      */
     public function __construct() {
-        // inicializace prace s DB
-        //require_once ("app/Models/DatabaseModel.class.php");
-        //$this->db = new DatabaseModel();
+        //konstruktor predka
         parent::__construct();
     }
 
@@ -27,94 +21,22 @@ class spravaClankuController extends BaseController implements IController {
      * @return string               Vypis v sablone.
      */
     public function show(string $pageTitle):string {
+        //// vsechna data sablony budou globalni
         global $tplData;
         $tplData = [];
+        //naplnime vstupni data jako je titulek stranky a zjisteni jestli je uzivatel prihlasen atd.
         $this->naplnVstupniData($pageTitle);
-
+        //podivame se jestli nekdo zaslal dotaz a pokud ano tak ho vlozime do tabulky DOTAZ
         $this->priselDotaz();
-
-        //// vsechna data sablony budou globalni
-       /* global $tplData;
-        $tplData = [];
-        // nazev
-        $tplData['title'] = $pageTitle;
-
-        $tplData['clanky'] = $this->db->getAllClanky();
-        $tplData['uzivatele'] = $this->db->getAllUsers();
-
-        $tplData['prihlasen'] = $this->db->isUserLogged();
-        if($tplData['prihlasen']){
-            $user = $this->db->getLoggedUserData();
-            $UzivID = $user['id_uzivatel'];
-        }*/
-
-        //otestovani jesli mame dotaz
-        /*if(isset($_POST['odeslano'])){
-            if ( (isset($_POST["email"]) && $_POST["email"] != "") && (isset($_POST["jmeno"]) && $_POST["jmeno"] != "") && (isset($_POST["dotaz"]) && $_POST["dotaz"] != "")) {
-                $this->db->addNewDotaz($_POST['email'], $_POST['jmeno'], $_POST['dotaz']);
-            }
-        }*/
-
+        //testujeme jestli se nekdo chce prihlasit a zda se jedna opravdu o uzivatele ktery se prihlasuje
+        // a kdyz ano tak ho prihlasime. zahrnuje testovani i pro odhlaseni
         $obsah = $this->prihalsOdhlasUzivatele('app/Views/DomaciStrankaTemplate.tpl.php', 'app/Views/IntroductionTemplate.tpl.php');
+        //obnovime tplData
         $tplData = $this->tplData;
-
+        //pokud je obsah ruzny od null tak se prihlasujeme nebo odhlasujeme
         if($obsah != null ) {
             return $obsah;
         }
-        // zpracovani odeslanych formularu na prihlaseni - mam akci?
-        /*if(isset($_POST["action"])){
-            // mam pozadavek na login ?
-            if($_POST["action"] == "login") {
-                // mam co ulozit?
-                if ( (isset($_POST["username"]) && $_POST["username"] != "") && (isset($_POST["heslo1"]) && $_POST["heslo1"] != "") ) {
-                    // prihlasim uzivatele
-                    $res = $this->db->userLogin($_POST['username'], $_POST['heslo1']);
-                    if ($res && $this->db->getLoggedUserData()['Zablokovany'] == 1){
-                        $this->db->userLogout();
-                        $tplData['prihlasen'] = false;
-                        echo "<script>alert('ERROR: Uživatel je zablokovaný');</script>";
-                    }elseif($res){
-                        echo "<script>alert('OK: Uživatel byl přihlášen');</script>";
-                        $tplData['prihlasen'] = true;
-                        $tplData['id_pravo'] = $this->db->getLoggedUserData()['id_pravo'];
-                        //// vypsani prislusne sablony
-                        // zapnu output buffer pro odchyceni vypisu sablony
-                        ob_start();
-                        // pripojim sablonu, cimz ji i vykonam
-                        require("app/Views/DomaciStrankaTemplate.tpl.php");
-                        // ziskam obsah output bufferu, tj. vypsanou sablonu
-                        // vratim sablonu naplnenou daty
-                        return ob_get_clean();
-                    }else{
-                        echo "<script>alert('ERROR: Přihlášení uživatele se nezdařilo');</script>";
-                    }
-                } else {
-                    echo "<script>alert('Nebylo zadáno uživatelské jméno.');</script>";
-                }
-            }// mam pozadavek na logout?
-            else if(isset($_POST['action'])){
-                if($_POST["action"] == "logout"){
-                    // odhlasim uzivatele
-                    $this->db->userLogout();
-                    echo "<script>alert('OK: Uživatel byl odhlášen');</script>";
-                    $tplData['prihlasen'] = false;
-                    //// vypsani prislusne sablony
-                    // zapnu output buffer pro odchyceni vypisu sablony
-                    ob_start();
-                    // pripojim sablonu, cimz ji i vykonam
-                    require("app/Views/IntroductionTemplate.tpl.php");
-                    // ziskam obsah output bufferu, tj. vypsanou sablonu
-                    // vratim sablonu naplnenou daty
-                    return ob_get_clean();
-                }
-            }
-            // neznamy pozadavek
-            else {
-                echo "<script>alert('Chyba: Nebyla rozpoznána požadovaná akce.');</script>";
-            }
-        }*/
-
-
         //stav clanku
         if(isset($_POST['stavC']) ){
             if($_POST['stavC'] == "povolitC"){
@@ -143,10 +65,8 @@ class spravaClankuController extends BaseController implements IController {
                 }
             }
         }
-
         //odebrani recenzenta
         if(isset($_POST['smazatA'])){
-            var_dump($_POST['smazatA']);
             //pokud mazeme prvního recenzenta musíme ho vymazat přesunout ostatní pokud jsou
             if($_POST['smazatA'] === "recenzent_1"){
                 //smazeme recenzenta
@@ -192,47 +112,11 @@ class spravaClankuController extends BaseController implements IController {
                 $this->db->updateClanekRecenzent($clanek, 0, 'recenzent_3', "", 0);
             }
         }
-
-
-
-        /*if($tplData['prihlasen']) {
-            $users = $this->db->getAllUsers();
-            $tplData['id_pravo'] = $this->db->getLoggedUserData()['id_pravo'];
-            $tplData['uzivatele'] = $this->db->getAllUsers();
-            $tplData['prava'] = $this->db->getAllRights();
-            $tplData['uzivatel'] = $this->db->getLoggedUserData();
-            $tplData['clanky'] = $this->db->getAllClanky();
-            $tplData['recenzenti'] = $this->db->vyberRecenzenty();
-            //$tplData['recenzujici'] = $this->db->getAllRecenzujiciClanky($tplData['clanky'], $tplData['recenzenti']);
-        }
-
-        if($tplData['prihlasen']){
-            //// vypsani prislusne sablony
-            // zapnu output buffer pro odchyceni vypisu sablony
-            ob_start();
-            // pripojim sablonu, cimz ji i vykonam
-            require("app/Views/spravaClankuTemplate.tpl.php");
-            // ziskam obsah output bufferu, tj. vypsanou sablonu
-            // vratim sablonu naplnenou daty
-            return ob_get_clean();
-        }else{
-            //// vypsani prislusne sablony
-            // zapnu output buffer pro odchyceni vypisu sablony
-            ob_start();
-            // pripojim sablonu, cimz ji i vykonam
-            require("app/Views/IntroductionTemplate.tpl.php");
-            // ziskam obsah output bufferu, tj. vypsanou sablonu
-            // vratim sablonu naplnenou daty
-            return ob_get_clean();
-        }*/
         $tplData = $this->tplData;
-
+        //rozlisujeme jaky controller bude vyuzit kdyz je uzivatel prihlasen nebo odhlasen
         $obsah =  $this->rozpoznejPrihlasenehoOdhlaseneho('app/Views/spravaClankuTemplate.tpl.php','app/Views/IntroductionTemplate.tpl.php');
-
-
+        $tplData = $this->tplData;
         return $obsah;
-
-
     }
 
 }

@@ -1,10 +1,8 @@
 <?php
-
 /**
  * Rozhrani pro vsechny ovladace (kontrolery).
  */
 interface IController {
-
     /**
      * Zajisti vypsani prislusne stranky.
      *
@@ -12,6 +10,5 @@ interface IController {
      * @return string               HTML prislusne stranky.
      */
     public function show(string $pageTitle):string;
-
 }
 

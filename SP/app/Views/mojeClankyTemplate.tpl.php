@@ -84,15 +84,23 @@ if($tplData['prihlasen']){
                                 <?php
                                 $at = $tplData['autori'];
                                 $ato = $tplData['prihlasenyJmeno'];
-                                $ator = 'Autoři: '.$tplData['prihlasenyJmeno'];
+                                $ator = 'Autoři: ';
                                 foreach($at as $a){
                                     //pokud máme jednoho autora tak upravíme začínající výpis
                                     if(count($at) == 1){
                                         $ato = 'Autor: '.$tplData['prihlasenyJmeno'];
                                     }else{
-                                        $ato = 'Autoři: '.$tplData['prihlasenyJmeno'];
-                                        $ato = $ato . ", ".  $a;
+                                        //$ato = 'Autoři: '.$tplData['prihlasenyJmeno'];
+                                        if($a === $tplData['prihlasenyJmeno']){
+                                            $ator = $ator .$tplData['prihlasenyJmeno'];
+                                        }else{
+                                            $ator = $ator . ", ".  $a;
+                                        }
+
                                     }
+                                }
+                                if(count($at) != 1){
+                                    $ato = $ator;
                                 }
                                 $tplData['autori']=null;
                                 $tplData['prihlasenyJmeno'] =null;

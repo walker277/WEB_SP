@@ -780,7 +780,12 @@ class DatabaseModel{
    }
 
     public function updateHodnoceni($clanek, $idUziv, $hodnoceni ): ?bool {
-        $clanek = array_map('htmlspecialchars', $clanek);
+        foreach ($clanek as $c){
+            if($c != null){
+                $c = htmlspecialchars($c);
+            }
+        }
+
         $idUziv = htmlspecialchars($idUziv);
         $hodnoceni = htmlspecialchars($hodnoceni);
         $idClanku = $clanek['idCLANEK'];
@@ -808,7 +813,11 @@ class DatabaseModel{
     }
 
     public function updateKomentare($clanek, $idUziv, $hodnoceni ): bool {
-        $clanek = array_map('htmlspecialchars', $clanek);
+        foreach ($clanek as $cA){
+            if($cA != null){
+                $cA = htmlspecialchars($cA);
+            }
+        }
         $idUziv = htmlspecialchars($idUziv);
         $hodnoceni = htmlspecialchars($hodnoceni);
         $idClanku = $clanek['idCLANEK'];
