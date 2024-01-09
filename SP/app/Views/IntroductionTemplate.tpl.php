@@ -1,41 +1,15 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-/////////////////////////////////////////////////////////////
-/////////// Sablona pro zobrazeni uvodni stranky  ///////////
-/////////////////////////////////////////////////////////////
-
-//// pozn.: sablona je samostatna a provadi primy vypis do vystupu:
-// -> lze testovat bez zbytku aplikace.
-// -> pri vyuziti Twigu se sablona obejde bez PHP.
-
-/*
-////// Po zakomponovani do zbytku aplikace bude tato cast odstranena/zakomentovana  //////
-//// UKAZKA: Uvod bude vypisovat informace z tabulky, ktera ma nasledujici sloupce:
-// id, date, author, title, text
-$tplData['title'] = "Úvodní stránka (TPL)";
-$tplData['stories'] = [
-    array("id_introduction" => 1, "date" => "2016-11-01 10:53:00", "author" => "A.B.", "title" => "Nadpis", "text" => "abcd")
-];
-define("DIRECTORY_VIEWS", "../Views");
-const WEB_PAGES = array(
-    "uvod" => array("title" => "Úvodní stránka (TPL)")
-);*/
-////// KONEC: Po zakomponovani do zbytku aplikace bude tato cast odstranena/zakomentovana  //////
-
-
 //// vypis sablony
 // urceni globalnich promennych, se kterymi sablona pracuje
 global $tplData;
-
 // pripojim objekt pro vypis hlavicky a paticky HTML
 require("TemplateBasics.class.php");
 $tplHeaders = new TemplateBasics();
 
 ?>
-    <!-- ------------------------------------------------------------------------------------------------------- -->
+<!-- ------------------------------------------------------------------------------------------------------- -->
 
-    <!-- Vypis obsahu sablony -->
+<!-- Vypis obsahu sablony -->
 <?php
 // muze se hodit: strtotime($d['date'])
 

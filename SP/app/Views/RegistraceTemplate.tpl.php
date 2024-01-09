@@ -1,7 +1,4 @@
 <?php
-///////////////////////////////////////////////////////////////////////////
-/////////// Sablona pro zobrazeni stranky se spravou uzivatelu  ///////////
-///////////////////////////////////////////////////////////////////////////
 //// vypis sablony
 // urceni globalnich promennych, se kterymi sablona pracuje
 global $tplData;
@@ -11,16 +8,10 @@ require("app/Views/TemplateBasics.class.php");
 $tplHeaders = new TemplateBasics();
 
 ?>
-    <!-- ------------------------------------------------------------------------------------------------------- -->
+<!-- ------------------------------------------------------------------------------------------------------- -->
 
-    <!-- Vypis obsahu sablony -->
+<!-- Vypis obsahu sablony -->
 <?php
-// muze se hodit:
-//<form method='post'>
-//    <input type='hidden' name='id_user' value=''>
-//    <button type='submit' name='action' value='delete'>Smazat</button>
-//</form>
-
 // hlavicka
 if($tplData['prihlasen']){
     $tplHeaders->getHTMLHeaderPrihlasen($tplData['title'],$tplData['id_pravo']);

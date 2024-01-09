@@ -1,7 +1,4 @@
 <?php
-///////////////////////////////////////////////////////////////////////////
-/////////// Sablona pro zobrazeni stranky se spravou uzivatelu  ///////////
-///////////////////////////////////////////////////////////////////////////
 //// vypis sablony
 // urceni globalnich promennych, se kterymi sablona pracuje
 global $tplData;
@@ -151,7 +148,7 @@ if($p < 3) { //tabulka neni urcena pro recenzenty nebo autory
                             .<td class='align-middle text-center'>                                                               
                                 <form action='' method='post'>                                    
                                     <div class='py-3'>
-                                        <input type='text' class='form-control text-center' placeholder='Nové heslo' name='hesloSez' required >
+                                        <input type='password' class='form-control text-center' placeholder='Nové heslo' name='hesloSez' required >
                                     </div>
                                     <div class='py-3'>
                                         <input type='hidden' name='id_uzivate' value='$u[id_uzivatel]'>

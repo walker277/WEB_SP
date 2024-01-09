@@ -22,7 +22,6 @@ const TABLE_DOTAZ = "DOTAZ";
 
 /** Adresar kontroleru. */
 const DIRECTORY_CONTROLLERS = "app/Controllers";
-/** Adresar modelu. */
 
 /** Klic defaultni webove stranky. */
 const DEFAULT_WEB_PAGE_KEY = "uvod";
@@ -78,6 +77,8 @@ const WEB_PAGES = array(
         "file_name" => "spravaUzivateluController.class.php",
         "class_name" => "spravaUzivatelu",
     ),
+    //// KONEC////
+    //// Stranka s clanky autora ////
     "mojeClanky" => array(
         "title" => "Moje články",
 
@@ -85,6 +86,8 @@ const WEB_PAGES = array(
         "file_name" => "mojeClankyController.class.php",
         "class_name" => "mojeClankyController",
     ),
+    //// KONEC////
+    //// Stranka s calnky recenzenta ////
     "mojeRecenze" => array(
         "title" => "Moje recenze",
 
@@ -92,6 +95,8 @@ const WEB_PAGES = array(
         "file_name" => "mojeRecenzeController.class.php",
         "class_name" => "mojeRecenzeController",
     ),
+    //// KONEC////
+    //// Sprava clanku ////
     "spravaclanku" => array(
         "title" => "Správa článků",
 
@@ -99,7 +104,8 @@ const WEB_PAGES = array(
         "file_name" => "spravaClankuController.class.php",
         "class_name" => "spravaClankuController",
     ),
-
+    //// KONEC////
+    //// Zverejnene clanky ////
     "domaci" => array(
         "title" => "Zveřejněné články",
 
@@ -107,6 +113,8 @@ const WEB_PAGES = array(
         "file_name" => "domaciController.class.php",
         "class_name" => "domaciController",
     ),
+    //// KONEC////
+    //// Stranka s dotazy////
     "dotazy" => array(
         "title" => "Dotazy",
 
@@ -114,5 +122,5 @@ const WEB_PAGES = array(
         "file_name" => "dotazyController.class.php",
         "class_name" => "dotazyController",
     ),
-    //// KONEC: Sprava uzivatelu ////
+    //// KONEC////
 );

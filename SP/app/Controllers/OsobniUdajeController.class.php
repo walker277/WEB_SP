@@ -57,19 +57,23 @@ class OsobniUdajeController extends BaseController implements IController {
                     echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
                 }
             }elseif ( (isset($_POST['username']) && ($_POST['username'] != "")) ){
-                $res = $this->db->updateUsername($UzivID, $_POST['username']);
-                if($res){
-                    echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+                if($this->db->jeUsernameVolne($_POST['username'],$this->db->getAllUsers())) {
+                    $res = $this->db->updateUsername($UzivID, $_POST['username']);
+                    if ($res) {
+                        echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+                    } else {
+                        echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+                    }
                 }else{
-                    echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+                    echo "<script>alert('ERROR: Uzivatelske jmeno je zabrane, a proto si zvolte jine');</script>";
                 }
             }elseif ( (isset($_POST['jmeno_prijmeni']) && ($_POST['jmeno_prijmeni'] != ""))){
-                $res = $this->db->updateUserJmeno($UzivID, $_POST['jmeno_prijmeni']);
-                if($res){
-                    echo "<script>alert('OK: Uživatel byl upraven.');</script>";
-                }else{
-                    echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
-                }
+                    $res = $this->db->updateUserJmeno($UzivID, $_POST['jmeno_prijmeni']);
+                    if($res){
+                        echo "<script>alert('OK: Uživatel byl upraven.');</script>";
+                    }else{
+                        echo "<script>alert('ERROR: Upravení uživatele se nezdařilo');</script>";
+                    }
             } elseif( (isset($_POST['heslo1']) && $_POST['heslo1'] != "") && (isset($_POST['heslo2']) && $_POST['heslo2'] != "")
                 && (isset($_POST['heslo3']) && $_POST['heslo3'] != "") && ($_POST['heslo2'] == $_POST['heslo3']) ){
 

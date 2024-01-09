@@ -1,17 +1,11 @@
 <?php
 global $tplData;
-
 // pripojim objekt pro vypis hlavicky a paticky HTML
 require("app/Views/TemplateBasics.class.php");
 $tplHeaders = new TemplateBasics();
-
 ?>
-<!-- ------------------------------------------------------------------------------------------------------- -->
-
 <!-- Vypis obsahu sablony -->
 <?php
-
-
 if($tplData['prihlasen']){
     $tplHeaders->getHTMLHeaderPrihlasen($tplData['title'],$tplData['id_pravo']);
 }else{
@@ -20,10 +14,8 @@ if($tplData['prihlasen']){
 ?>
 <div class="container-fluid lingrad">
     <h2 class="py-3 font-weight-bold text-primary">Aktuality konference</h2>
-
     <div class="row py-3">
            <div class="card-group">
-               <!--Dopln hlavu do tela nekam ukaz víc a carousel muzes pridat-->
                <div class="container col-xl-4 col-lg-6 col-md-12 col-sm-12 py-3">
                    <div class="card border-dark">
                        <div class="card-header">

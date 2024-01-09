@@ -1,8 +1,4 @@
 <?php
-///////////////////////////////////////////////////////////////////////////
-/////////// Sablona pro zobrazeni stranky se spravou uzivatelu  ///////////
-///////////////////////////////////////////////////////////////////////////
-
 //// vypis sablony
 // urceni globalnich promennych, se kterymi sablona pracuje
 global $tplData;
@@ -12,9 +8,9 @@ require("app/Views/TemplateBasics.class.php");
 $tplHeaders = new TemplateBasics();
 
 ?>
-    <!-- ------------------------------------------------------------------------------------------------------- -->
+<!-- ------------------------------------------------------------------------------------------------------- -->
 
-    <!-- Vypis obsahu sablony -->
+<!-- Vypis obsahu sablony -->
 <?php
 
 if($tplData['prihlasen']){

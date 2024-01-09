@@ -1,8 +1,4 @@
 <?php
-///////////////////////////////////////////////////////////////////////////
-/////////// Sablona pro zobrazeni stranky se spravou uzivatelu  //////////
-
-
 //// vypis sablony
 // urceni globalnich promennych, se kterymi sablona pracuje
 global $tplData;
@@ -12,9 +8,9 @@ require("app/Views/TemplateBasics.class.php");
 $tplHeaders = new TemplateBasics();
 
 ?>
-    <!-- ------------------------------------------------------------------------------------------------------- -->
+<!-- ------------------------------------------------------------------------------------------------------- -->
 
-    <!-- Vypis obsahu sablony -->
+<!-- Vypis obsahu sablony -->
 <?php
 
 if($tplData['prihlasen']){
@@ -23,6 +19,7 @@ if($tplData['prihlasen']){
     $tplHeaders->getHTMLHeader($tplData['title']);
 }
 ?>
+<div>
 <div class="lingrad">
     <div class="container-fluid">
         <h2 class="py-3 font-weight-bold text-primary">Zveřejněné články</h2>
@@ -228,6 +225,7 @@ if($tplData['prihlasen']){
         }
         ?>
     </div>
+</div>
 </div>
 <?php
 // paticka

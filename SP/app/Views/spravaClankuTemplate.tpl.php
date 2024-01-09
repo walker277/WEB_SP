@@ -1,7 +1,4 @@
 <?php
-///////////////////////////////////////////////////////////////////////////
-/////////// Sablona pro zobrazeni stranky se spravou uzivatelu  ///////////
-///////////////////////////////////////////////////////////////////////////
 //// vypis sablony
 // urceni globalnich promennych, se kterymi sablona pracuje
 global $tplData;
@@ -11,15 +8,10 @@ require("app/Views/TemplateBasics.class.php");
 $tplHeaders = new TemplateBasics();
 
 ?>
-    <!-- ------------------------------------------------------------------------------------------------------- -->
+<!-- ------------------------------------------------------------------------------------------------------- -->
 
-    <!-- Vypis obsahu sablony -->
+<!-- Vypis obsahu sablony -->
 <?php
-// muze se hodit:
-//<form method='post'>
-//    <input type='hidden' name='id_user' value=''>
-//    <button type='submit' name='action' value='delete'>Smazat</button>
-//</form>
 
 // hlavicka
 if($tplData['prihlasen']){
@@ -28,11 +20,6 @@ if($tplData['prihlasen']){
     $tplHeaders->getHTMLHeader($tplData['title']);
 }
 ?>
-<!-- bootstrap -->
-
-<link rel="stylesheet" href="../../composer-ukazka/vendor/twbs/bootstrap/dist/css/bootstrap.min.css"
-      xmlns="http://www.w3.org/1999/html">
-<link rel="stylesheet" href="../../composer-ukazka/vendor/components/font-awesome/css/font-awesome.min.css">
 <div class="lingrad">
     <div class="container-fluid">
         <h2 class="py-3 font-weight-bold text-primary">Správa Článků</h2>
@@ -346,12 +333,6 @@ if($tplData['prihlasen']){
         ?>
     </div>
 </div>
-<!-- lokalni alternativa -->
-
-<script src="../../composer-ukazka/vendor/components/jquery/jquery.min.js"></script>
-<script src="../../composer-ukazka/vendor/alexandermatveev/popper-bundle/AlexanderMatveev/PopperBundle/Resources/public/popper.min.js"></script>
-<script src="../../composer-ukazka/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
-
 <?php
 // paticka
 $tplHeaders->getHTMLFooter()

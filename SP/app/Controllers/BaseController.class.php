@@ -154,8 +154,13 @@ class BaseController{
             $this->tplData['clankyAutoru'] = $this->db->getAllClankyAutoru();
             //vsechny id clanku autora
             $idUzivatelovoClanku = $this->db->getAllAutoroviClankyID($this->tplData['prihlasenyID'],$this->tplData['clankyAutoru']);
-            //vsechny autorovi clanky
-            $this->tplData['autoroviClanky'] = $this->db->getAllAutoroviClanky($idUzivatelovoClanku, $this->tplData['clanky']);
+
+           // if($idUzivatelovoClanku != null ) {
+           //     $this->tplData['autoroviClanky'] = null;
+           // }else{
+                //vsechny autorovi clanky
+                $this->tplData['autoroviClanky'] = $this->db->getAllAutoroviClanky($idUzivatelovoClanku, $this->tplData['clanky']);
+           // }
             //vsechny id autoru clanku
             $this->tplData['idAutoruClanku'] = $this->db->getAllUzivIdClanku($idUzivatelovoClanku, $this->tplData['clankyAutoru']);
             //vsechny uzivatele clanku

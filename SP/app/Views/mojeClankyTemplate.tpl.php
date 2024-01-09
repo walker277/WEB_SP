@@ -1,22 +1,15 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-///////////////////////////////////////////////////////////////////////////
-/////////// Sablona pro zobrazeni stranky se spravou uzivatelu  ///////////
-///////////////////////////////////////////////////////////////////////////
-
 //// vypis sablony
 // urceni globalnich promennych, se kterymi sablona pracuje
 global $tplData;
-
 // pripojim objekt pro vypis hlavicky a paticky HTML
 require("app/Views/TemplateBasics.class.php");
 $tplHeaders = new TemplateBasics();
 
 ?>
-    <!-- ------------------------------------------------------------------------------------------------------- -->
+<!-- ------------------------------------------------------------------------------------------------------- -->
 
-    <!-- Vypis obsahu sablony -->
+<!-- Vypis obsahu sablony -->
 <?php
 
 if($tplData['prihlasen']){
@@ -416,22 +409,7 @@ if($tplData['prihlasen']){
         }
     }
     ?>
-
-    <!--<div class=" text-center col-12">
-        <?php
-        //echo "<button class='btn btn-dark font-weight-bold' data-toggle='collapse' data-target='#pdfdivk'>zobrazit</button>";
-        ?>
-    </div>
-    <div id="pdfdivk" class="collapse">
-        <?php
-        /*$cesta = 'soubory/pdf_SP.pdf';
-        echo "<embed type='application/pdf' src=$cesta width='100%' height='600px' >";
-        */?>
-    </div>-->
-
-
 </div>
-
 <?php
 // paticka
 $tplHeaders->getHTMLFooter()
