@@ -36,7 +36,7 @@ Umístěte projekt do složky htdocs ve XAMPPu:
     Linux: /opt/lampp/htdocs/WEB_SP
 Spusťte web v prohlížeči:
     
-    http://localhost/WEB_SP/
+    http://localhost/WEB_SP/SP/
 
 Poznámka: Informace o uživatelích, použitých technologiích a struktuře projektu jsou uvedeny v dokumentaci:
 WEB_SP/SP/doc/dokumentace.pdf
