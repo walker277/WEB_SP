@@ -7,7 +7,7 @@
 ## Instalace a spuštění
 Naklonujte projekt:  
   
-   git clone https://github.com/tvuj-uzivatel/tvuj-projekt.git
+   git clone https://github.com/walker277/WEB_SP.git
 
 Nainstalujte lokální server, např. XAMPP, a spusťte Apache a MySQL.
 
