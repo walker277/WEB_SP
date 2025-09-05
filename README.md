@@ -5,8 +5,7 @@
 ---
 
 ## Instalace a spuštění
-
-1. Naklonujte projekt:  
+Naklonujte projekt:  
   
    git clone https://github.com/tvuj-uzivatel/tvuj-projekt.git
 
